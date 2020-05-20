@@ -3,10 +3,17 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		12ABE0B52475350B002F3838 /* AudioKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12ABE0B42475350B002F3838 /* AudioKit.framework */; };
+		12ABE0BC247535F2002F3838 /* test_1_paars.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 12ABE0B7247535F1002F3838 /* test_1_paars.mp3 */; };
+		12ABE0BD247535F2002F3838 /* test_1_3blink.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 12ABE0B8247535F1002F3838 /* test_1_3blink.mp3 */; };
+		12ABE0BE247535F2002F3838 /* test_1_1low.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 12ABE0B9247535F1002F3838 /* test_1_1low.mp3 */; };
+		12ABE0BF247535F2002F3838 /* test_1_4birds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 12ABE0BA247535F1002F3838 /* test_1_4birds.mp3 */; };
+		12ABE0C0247535F2002F3838 /* test_1_0Core.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 12ABE0BB247535F2002F3838 /* test_1_0Core.mp3 */; };
+		12ABE0C224753D78002F3838 /* AudioPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12ABE0C124753D78002F3838 /* AudioPlugin.swift */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
@@ -29,6 +36,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		12ABE0B42475350B002F3838 /* AudioKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AudioKit.framework; sourceTree = "<group>"; };
+		12ABE0B7247535F1002F3838 /* test_1_paars.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = test_1_paars.mp3; sourceTree = "<group>"; };
+		12ABE0B8247535F1002F3838 /* test_1_3blink.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = test_1_3blink.mp3; sourceTree = "<group>"; };
+		12ABE0B9247535F1002F3838 /* test_1_1low.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = test_1_1low.mp3; sourceTree = "<group>"; };
+		12ABE0BA247535F1002F3838 /* test_1_4birds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = test_1_4birds.mp3; sourceTree = "<group>"; };
+		12ABE0BB247535F2002F3838 /* test_1_0Core.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = test_1_0Core.mp3; sourceTree = "<group>"; };
+		12ABE0C124753D78002F3838 /* AudioPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlugin.swift; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
@@ -49,12 +63,25 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12ABE0B52475350B002F3838 /* AudioKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		12ABE0B6247535D0002F3838 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				12ABE0BB247535F2002F3838 /* test_1_0Core.mp3 */,
+				12ABE0B9247535F1002F3838 /* test_1_1low.mp3 */,
+				12ABE0B8247535F1002F3838 /* test_1_3blink.mp3 */,
+				12ABE0BA247535F1002F3838 /* test_1_4birds.mp3 */,
+				12ABE0B7247535F1002F3838 /* test_1_paars.mp3 */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
@@ -69,6 +96,7 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
+				12ABE0B6247535D0002F3838 /* Resources */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
@@ -86,6 +114,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				12ABE0B42475350B002F3838 /* AudioKit.framework */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -95,6 +124,7 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				12ABE0C124753D78002F3838 /* AudioPlugin.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -169,8 +199,13 @@
 			files = (
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
+				12ABE0BC247535F2002F3838 /* test_1_paars.mp3 in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
+				12ABE0C0247535F2002F3838 /* test_1_0Core.mp3 in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
+				12ABE0BE247535F2002F3838 /* test_1_1low.mp3 in Resources */,
+				12ABE0BF247535F2002F3838 /* test_1_4birds.mp3 in Resources */,
+				12ABE0BD247535F2002F3838 /* test_1_3blink.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,6 +248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				12ABE0C224753D78002F3838 /* AudioPlugin.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -301,12 +337,23 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
+					"$(PROJECT_DIR)/Runner",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Flutter,
+					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.pebbl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -418,7 +465,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -431,16 +479,28 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 34X9E92QY2;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
+					"$(PROJECT_DIR)/Runner",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Flutter,
+					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.pebbl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -462,12 +522,23 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
+					"$(PROJECT_DIR)/Runner",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Flutter,
+					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.pebbl;
 				PRODUCT_NAME = "$(TARGET_NAME)";

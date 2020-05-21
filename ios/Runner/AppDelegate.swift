@@ -35,33 +35,76 @@ import AudioKit
             return
         }else if call.method == "initSet" {
             
-            guard let args = call.arguments as? [String: Any] else {
-                result(false)
-                return
-            }
-            if let name = args["name"] as? String {
-                let success = self.audioPlugin.initSet(name: name)
-                result(success)
-            }else{
-                result(false)
-            }
+            self.initSet(call: call,result: result)
             return
         }else if call.method == "playSet" {
-            guard let args = call.arguments as? [String: Any] else {
-                result(false)
-                return
-            }
-            if let name = args["name"] as? String {
-                let success = self.audioPlugin.playSet(name: name)
-                result(success)
-            }else{
-                result(false)
-            }
+            self.playSet(call: call, result: result)
+            return
+        }else if call.method == "pauseSet" {
+            self.pauseSet(call: call, result: result)
+            return
+        }else if call.method == "changeStemVolume" {
+            self.changeStemVolume(call: call, result: result)
             return
         }else{
             result(FlutterMethodNotImplemented)
         }
     }
+    private func changeStemVolume(call: FlutterMethodCall, result: @escaping FlutterResult){
+        guard let args = call.arguments as? [String: Any] else {
+            result(false)
+            return
+        }
+        if let name = args["name"] as? String, let volume = args["volume"] as? Double{
+            self.audioPlugin.changeStemVolume(name: name,volume: volume)
+            result(true)
+        }else{
+            result(false)
+        }
+    }
+    private func playSet(call: FlutterMethodCall, result: @escaping FlutterResult){
+        guard let args = call.arguments as? [String: Any] else {
+            result(false)
+            return
+        }
+         NSLog("\nINITIALIZE PLAYING SET")
+        if let name = args["name"] as? String {
+            let success = self.audioPlugin.playSet(name: name)
+            result(success)
+            return
+        }else{
+            result(false)
+        }
+    }
+    private func pauseSet(call: FlutterMethodCall, result: @escaping FlutterResult){
+           NSLog("\nPAUSING PLAYERS")
+           guard let args = call.arguments as? [String: Any] else {
+               result(false)
+               return
+           }
+           if let name = args["name"] as? String {
+               let success = self.audioPlugin.pauseSet(name: name) as Bool
+               result(success)
+           }else{
+               result(false)
+           }
+       }
+       
+    
+    private func initSet(call: FlutterMethodCall, result: @escaping FlutterResult){
+        guard let args = call.arguments as? [String: Any] else {
+            result(false)
+            return
+        }
+        if let name = args["name"] as? String {
+            let success = self.audioPlugin.initSet(name: name)
+            result(success)
+            return
+        }else{
+            result(false)
+        }
+    }
+    
     private func getPlatformVersion(result: @escaping FlutterResult) {
         result("iOS " + UIDevice.current.systemVersion)
     }

@@ -1,8 +1,12 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
+import 'package:pebbl/colors.dart';
 
-import 'package:flutter/services.dart';
+import 'package:pebbl/model/audio_set.dart';
+import 'package:pebbl/model/stem.dart';
 import 'package:pebbl/plugin/audio_plugin.dart';
+import 'package:pebbl/view/volume_slider.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,62 +18,86 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  FirebaseAnalytics analytics = FirebaseAnalytics();
+  AudioPlugin _plugin = AudioPlugin();
+  //"test_1_0Core.mp3","test_1_1low.mp3","test_1_3blink.mp3","test_1_4birds.mp3","test_1_paars.mp3"
+  AudioSet _testSet = AudioSet(stems: [
+    Stem(fileName: 'test_1_0Core.mp3', name: 'Core'),
+    Stem(fileName: 'test_1_1low.mp3', name: 'Low'),
+    Stem(fileName: 'test_1_3blink.mp3', name: 'Blink'),
+    Stem(fileName: 'test_1_4birds.mp3', name: 'Birds'),
+    Stem(fileName: 'test_1_paars.mp3', name: 'Paars')
+  ]);
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await AudioPlugin.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   void _play() async {
-    var result = await AudioPlugin.initSet('test');
+    var result = await _plugin.initSet('test');
     if (result) {
-      var result = await AudioPlugin.playSet('test');
+      _isPlaying = await _plugin.playSet('test');
     } else {
       print('Error initializing set');
     }
+    setState(() {});
+  }
+
+  void _pause() async {
+    _isPlaying = !await _plugin.pauseSet('pause');
+    setState(() {});
+  }
+
+  List<Widget> _createVolumeSliders() {
+    if (!_isPlaying) return [SizedBox()];
+    var volumes = List<Widget>.from(
+      _testSet.stems.map(
+        (stem) => VolumeSlider(
+          stem: stem,
+          volumeChanged: (value) => _changeVolume(stem, value),
+        ),
+      ),
+    );
+    return volumes;
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [
+        FirebaseAnalyticsObserver(analytics: analytics),
+      ],
       home: Scaffold(
+        backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
+          backgroundColor: AppColors.backgroundColor,
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Column(
-            children: <Widget>[
-              RaisedButton(
-                child: Text('Start Audio'),
-                onPressed: _play,
-              ),
-              Text('Running on: $_platformVersion\n'),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: ListView(
+              children: <Widget>[
+                RaisedButton(
+                  child: Text(_isPlaying ? 'Pause Audio' : 'Play Audio'),
+                  onPressed: _isPlaying ? _pause : _play,
+                ),
+                const SizedBox(height:24),
+               // VolumeSlider(stem: Stem(fileName: 'Test',name: 'Test'),),
+                ..._createVolumeSliders()
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void _changeVolume(Stem stem, double volume) async {
+    _plugin.changeStemVolume(stem.fileName, volume);
+    stem.volume = volume;
+    setState(() {});
   }
 }

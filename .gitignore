@@ -31,7 +31,7 @@
 .pub-cache/
 .pub/
 /build/
-/ios/Runner/AudioKit.framework/
+
 
 # Web related
 lib/generated_plugin_registrant.dart

@@ -31,4 +31,4 @@ Runner/GeneratedPluginRegistrant.*
 !default.pbxuser
 !default.perspectivev3
 
-Runner/AudioKit.framework/AudioKit
+*Runner/AudioKit.framework/AudioKit

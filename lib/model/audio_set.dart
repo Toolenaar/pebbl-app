@@ -43,15 +43,20 @@ class AudioSet {
       Stem(fileName: 'test_1_paars.mp3', name: 'Paars')
     ];
     return [
-      AudioSet(fileName: 'test', name: 'Sunrays', category: 'R:elax',stems: stems),
-      AudioSet(fileName: 'test', name: 'Piano bar', category: 'R:elax',stems: stems),
-      AudioSet(fileName: 'test', name: 'Crystal Caves', category: 'R:elax',stems: stems),
-      AudioSet(fileName: 'test', name: 'Rainforset', category: 'S:leep',stems: stems),
-      AudioSet(fileName: 'test', name: 'Astral Plane', category: 'S:leep',stems: stems),
-      AudioSet(fileName: 'test', name: 'Shore', category: 'S:leep',stems: stems),
-      AudioSet(fileName: 'test', name: 'The coffee bar', category: 'F:ocus',stems: stems),
-      AudioSet(fileName: 'test', name: 'Light Surge', category: 'F:ocus',stems: stems),
-      AudioSet(fileName: 'test', name: 'Brainy beats', category: 'F:ocus',stems: stems),
+      AudioSet(fileName: 'test', name: 'Sunrays', category: 'R:elax', stems: stems),
+      AudioSet(fileName: 'test', name: 'Piano bar', category: 'R:elax', stems: stems),
+      AudioSet(fileName: 'test', name: 'Crystal Caves', category: 'R:elax', stems: stems),
+      AudioSet(fileName: 'test', name: 'Rainforset', category: 'S:leep', stems: stems),
+      AudioSet(fileName: 'test', name: 'Astral Plane', category: 'S:leep', stems: stems),
+      AudioSet(fileName: 'test', name: 'Shore', category: 'S:leep', stems: stems),
+      AudioSet(fileName: 'test', name: 'The coffee bar', category: 'F:ocus', stems: stems),
+      AudioSet(fileName: 'test', name: 'Light Surge', category: 'F:ocus', stems: stems),
+      AudioSet(fileName: 'test', name: 'Brainy beats', category: 'F:ocus', stems: stems),
     ];
+  }
+
+  String get fullName {
+    final cat = category[0];
+    return '$cat:$name';
   }
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/texts.dart';
+import 'package:pebbl/model/audio_set.dart';
+import 'package:pebbl/presenter/sets_presenter.dart';
+import 'package:provider/provider.dart';
 
 class BottomBar extends StatelessWidget {
   final Function(int) onTabChanged;
@@ -15,25 +18,29 @@ class BottomBar extends StatelessWidget {
         Expanded(
             flex: 1,
             child: BottomBarItem(
+              child: ActiveSetBottomBarItem(isActive: activeIndex == 0),
               textAlignment: Alignment.centerLeft,
-              title: 'R:Sunrays',
               onTap: () => onTabChanged(0),
-              isActive: activeIndex == 0,
-            )),
-        Expanded(
-            flex: 1,
-            child: BottomBarItem(
-              title: 'Infinite',
-              onTap: () => onTabChanged(1),
-              isActive: activeIndex == 1,
             )),
         Expanded(
           flex: 1,
           child: BottomBarItem(
+            child: TextBottomBarItem(
+              title: 'Infinite',
+              isActive: activeIndex == 1,
+            ),
+            onTap: () => onTabChanged(1),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: BottomBarItem(
+            child: TextBottomBarItem(
+              title: '00:00',
+              isActive: activeIndex == 2,
+            ),
             textAlignment: Alignment.centerRight,
-            title: '00.00',
             onTap: () => onTabChanged(2),
-            isActive: activeIndex == 2,
           ),
         )
       ],
@@ -42,21 +49,15 @@ class BottomBar extends StatelessWidget {
 }
 
 class BottomBarItem extends StatelessWidget {
-  final String title;
   final Function onTap;
   final AlignmentGeometry textAlignment;
-  final bool isActive;
+  final Widget child;
   const BottomBarItem(
-      {Key key,
-      @required this.title,
-      this.isActive = false,
-      @required this.onTap,
-      this.textAlignment = Alignment.center})
+      {Key key, @required this.child, @required this.onTap, this.textAlignment = Alignment.center})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? Colors.white : AppColors.inactive;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -64,9 +65,33 @@ class BottomBarItem extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
         child: Align(
           alignment: textAlignment,
-          child: BodyText2(title, color: color),
+          child: child,
         ),
       ),
     );
+  }
+}
+
+class TextBottomBarItem extends StatelessWidget {
+  final String title;
+  final bool isActive;
+  const TextBottomBarItem({Key key, this.isActive = false, this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isActive ? Colors.white : AppColors.inactive;
+    return BodyText2(title, color: color);
+  }
+}
+
+class ActiveSetBottomBarItem extends StatelessWidget {
+  final bool isActive;
+  const ActiveSetBottomBarItem({Key key, this.isActive = false}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isActive ? Colors.white : AppColors.inactive;
+    final activeSet = context.select<SetsPresenter, AudioSet>((value) => value.activeSet);
+    return FittedBox(fit: BoxFit.fitWidth, child: BodyText2(activeSet.fullName, color: color));
   }
 }

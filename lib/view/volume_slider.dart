@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pebbl/colors.dart';
+import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/model/stem.dart';
 
 class VolumeSlider extends StatelessWidget {
@@ -20,7 +20,7 @@ class VolumeSlider extends StatelessWidget {
             inactiveTrackColor:Colors.white.withOpacity(0.3),
             trackShape: RectangularSliderTrackShape(),
             trackHeight: 1.0,
-            thumbColor: AppColors.backgroundColor,
+            thumbColor: AppColors.background,
             thumbShape: CustomThumbShape(),
             overlayColor: Colors.transparent,
             overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),

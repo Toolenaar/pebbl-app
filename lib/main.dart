@@ -1,15 +1,40 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
-import 'package:pebbl/colors.dart';
+import 'package:pebbl/logic/colors.dart';
 
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/model/stem.dart';
 import 'package:pebbl/plugin/audio_plugin.dart';
+import 'package:pebbl/presenter/sets_presenter.dart';
+import 'package:pebbl/view/dashboard_screen.dart';
 import 'package:pebbl/view/volume_slider.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(PebblApp());
+}
+
+class PebblApp extends StatelessWidget {
+  final FirebaseAnalytics analytics = FirebaseAnalytics();
+  PebblApp({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => SetsPresenter(),
+        )
+      ],
+      child: MaterialApp(
+        navigatorObservers: [
+          FirebaseAnalyticsObserver(analytics: analytics),
+        ],
+        home: DashboardScreen(),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -70,9 +95,9 @@ class _MyAppState extends State<MyApp> {
         FirebaseAnalyticsObserver(analytics: analytics),
       ],
       home: Scaffold(
-        backgroundColor: AppColors.backgroundColor,
+        backgroundColor: AppColors.background,
         appBar: AppBar(
-          backgroundColor: AppColors.backgroundColor,
+          backgroundColor: AppColors.background,
           title: const Text('Plugin example app'),
         ),
         body: Center(
@@ -84,8 +109,8 @@ class _MyAppState extends State<MyApp> {
                   child: Text(_isPlaying ? 'Pause Audio' : 'Play Audio'),
                   onPressed: _isPlaying ? _pause : _play,
                 ),
-                const SizedBox(height:24),
-               // VolumeSlider(stem: Stem(fileName: 'Test',name: 'Test'),),
+                const SizedBox(height: 24),
+                // VolumeSlider(stem: Stem(fileName: 'Test',name: 'Test'),),
                 ..._createVolumeSliders()
               ],
             ),

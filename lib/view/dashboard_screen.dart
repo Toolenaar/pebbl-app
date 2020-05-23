@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/model/audio_set.dart';
+import 'package:pebbl/model/stem.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/view/components/bottom_bar.dart';
 import 'package:pebbl/view/components/set_center_piece.dart';
@@ -47,8 +48,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return const SizedBox();
   }
 
+  void _play() async {
+    context.read<SetsPresenter>().playActiveSet();
+  }
+
+  void _pause() async {
+    context.read<SetsPresenter>().stopActiveSet();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isPlaying = context.select<SetsPresenter, bool>((value) => value.isPlaying);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -62,6 +72,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
             ),
+            RaisedButton(
+              child: Text(isPlaying ? 'Pause Audio' : 'Play Audio'),
+              onPressed: isPlaying ? _pause : _play,
+            ),
+            const SizedBox(height:16),
             BottomBar(
               activeIndex: _activeIndex,
               onTabChanged: _onTabChanged,

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/model/stem.dart';
+import 'dart:math';
 
 class VolumeSlider extends StatelessWidget {
   final Stem stem;
+  final bool showLabel;
   final Function(double) volumeChanged;
-  const VolumeSlider({Key key, @required this.stem, @required this.volumeChanged}) : super(key: key);
+  const VolumeSlider({Key key, @required this.stem, @required this.volumeChanged, this.showLabel = true})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,11 +16,15 @@ class VolumeSlider extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text(stem.name,style: Theme.of(context).textTheme.bodyText2.copyWith(color:Colors.white),),
+        if (showLabel)
+          Text(
+            stem.name,
+            style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white),
+          ),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: Colors.white,
-            inactiveTrackColor:Colors.white.withOpacity(0.3),
+            inactiveTrackColor: Colors.white.withOpacity(0.3),
             trackShape: RectangularSliderTrackShape(),
             trackHeight: 1.0,
             thumbColor: AppColors.background,
@@ -25,14 +32,17 @@ class VolumeSlider extends StatelessWidget {
             overlayColor: Colors.transparent,
             overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
           ),
-          child: Slider(
-              min: 0,
-              max: 100,
-              value: stem.volume * 100,
-              onChanged: (value) {
-                double volume = value / 100;
-                volumeChanged(volume);
-              }),
+          child: Container(
+          //  color: Colors.red,
+            child: Slider(
+                min: 0,
+                max: 100,
+                value: stem.volume * 100,
+                onChanged: (value) {
+                  double volume = value / 100;
+                  volumeChanged(volume);
+                }),
+          ),
         ),
       ],
     );
@@ -66,8 +76,6 @@ class CustomThumbShape extends SliderComponentShape {
   }) {
     final Canvas canvas = context.canvas;
 
-  
-
     final fillPaint = Paint()
       ..color = sliderTheme.thumbColor
       ..style = PaintingStyle.fill;
@@ -79,5 +87,31 @@ class CustomThumbShape extends SliderComponentShape {
 
     canvas.drawCircle(center, thumbRadius, fillPaint);
     canvas.drawCircle(center, thumbRadius, borderPaint);
+  }
+}
+
+class RotatedVolumeSlider extends StatelessWidget {
+  final Stem stem;
+  final double degrees;
+  final Function(double) volumeChanged;
+  const RotatedVolumeSlider({Key key, @required this.stem, @required this.volumeChanged, this.degrees = 0})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final radians = degrees * pi / 180;
+    return LayoutBuilder(
+      builder: (ctx, constraints) {
+        return Transform.rotate(
+          angle: radians,
+          origin: Offset(0, 0),
+          child: VolumeSlider(
+            stem: stem,
+            showLabel: false,
+            volumeChanged: volumeChanged,
+          ),
+        );
+      },
+    );
   }
 }

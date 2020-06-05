@@ -8,9 +8,7 @@ import AudioKit
 import Foundation
 class AudioPlugin {
     
-    var sets: [String: Array<String>] = [
-        "test":["test_1_0Core.mp3","test_1_1low.mp3","test_1_3blink.mp3","test_1_4birds.mp3","test_1_paars.mp3"]
-    ]
+    var sets: [String: Array<String>] = [:]
     
     var activeAudioPlayers: [String: AKPlayer]?
     
@@ -19,9 +17,10 @@ class AudioPlugin {
     var booster:AKBooster?
     
     //SETUP
-    func initSet(name:String) -> Bool{
+    func initSet(name:String, paths: Array<String>) -> Bool{
         NSLog("\nSETTING UP SET \(name)")
         //setup each stem
+        sets[name] = paths
         if let set = sets[name]{
             do {
                 try setupStems(stems: set)
@@ -45,17 +44,17 @@ class AudioPlugin {
     private func setupStems(stems: Array<String>) throws{
         activeAudioPlayers = [String: AKPlayer]()
         for stem in stems {
-            try self.setupStem(name: stem)
+            try self.setupStem(path: stem)
         }
     }
     
-    private func setupStem(name:String) throws{
-        let file = try AKAudioFile(readFileName: name)
+    private func setupStem(path:String) throws{
+        let file = try AKAudioFile(readFileName: path, baseDir: AKAudioFile.BaseDirectory.documents)
         let player = AKPlayer(audioFile: file)
         player.isLooping = true
         player.buffering = .always
         player.volume = 1.0
-        activeAudioPlayers?[name] = player
+        activeAudioPlayers?[path] = player
     }
     
     // PLAYBACK
@@ -72,15 +71,15 @@ class AudioPlugin {
         return false
     }
     func playSet(name:String) -> Bool{
-         NSLog("\nSTART PLAYING SET \(name)")
+        NSLog("\nSTART PLAYING SET \(name)")
         if let players = activeAudioPlayers{
             do {
                 try playPlayers(players:players.map{$0.value})
             } catch {
-                  NSLog("\nERROR PLAYING SET \(name)")
+                NSLog("\nERROR PLAYING SET \(name)")
                 return false
             }
-             NSLog("\nPLAYING SET  \(name)")
+            NSLog("\nPLAYING SET  \(name)")
             return true
         }
         return false
@@ -104,7 +103,7 @@ class AudioPlugin {
         player.stop()
     }
     func changeStemVolume(name:String,volume:Double){
-         NSLog("\nCHANGING VOLUME \(name)")
+        NSLog("\nCHANGING VOLUME \(name)")
         if let player = activeAudioPlayers?[name] {
             player.volume = volume
         }

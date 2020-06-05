@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
@@ -69,10 +70,41 @@ class SetsListSetItem extends StatelessWidget {
   final Function onTap;
   const SetsListSetItem({Key key, @required this.audioSet, @required this.onTap}) : super(key: key);
 
+  Widget _checkIfCurrentlyDownloading(BuildContext context) {
+    var items = context.select<SetsPresenter, Map<String, double>>((value) => value.currentDownloadProgress);
+    final downloadingSet = items[audioSet.id];
+    if (downloadingSet != null) {
+      final progress = items[audioSet.id] / 100;
+      return DownloadProgress(progress: progress);
+    }
+    return null;
+  }
+
+  Widget _setNameSuffix(Color color, BuildContext context) {
+    
+    Widget downloading = _checkIfCurrentlyDownloading(context);
+    if (downloading != null) return downloading;
+
+    switch (audioSet.status) {
+      case AudioSetStatus.notDownloaded:
+        return BodyText2(
+          '- not downloaded',
+          fontSize: 14,
+          color: color,
+        );
+        break;
+      case AudioSetStatus.downloaded:
+        return DownloadProgress();
+      default:
+        return SizedBox();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final activeSet = context.select<SetsPresenter, AudioSet>((value) => value.activeSet);
     final isActive = activeSet == audioSet;
+    final color = audioSet.status == AudioSetStatus.downloaded ? Colors.white : AppColors.inactive;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -87,12 +119,50 @@ class SetsListSetItem extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             BodyText2(
-              audioSet.name,
+              '${audioSet.name}',
               fontSize: 14,
+              color: color,
             ),
+            const SizedBox(width: 4),
+            _setNameSuffix(color, context)
           ],
         ),
       ),
+    );
+  }
+}
+
+class DownloadProgress extends StatelessWidget {
+  final double progress;
+
+  const DownloadProgress({Key key, this.progress = 1}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          height: 16,
+          width: 16,
+          decoration: BoxDecoration(
+            color: Colors.white12,
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        Positioned.fill(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                width: 16,
+                height: 16 * progress,
+                color: Colors.green,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

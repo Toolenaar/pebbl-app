@@ -27,7 +27,7 @@ class _SetCenterpieceState extends State<SetCenterpiece> {
   }
 
   void _changeVolume(Stem stem, double volume) async {
-    context.read<SetsPresenter>().changeStemVolume(stem.fileName, volume);
+    context.read<SetsPresenter>().changeStemVolume(stem.filePath, volume);
     stem.volume = volume;
     setState(() {});
   }
@@ -62,8 +62,8 @@ class _SetCenterpieceState extends State<SetCenterpiece> {
     return LayoutBuilder(builder: (context, constraints) {
       var sliders = [];
       if (isPlaying) {
-        final stems = activeSet.stems.take(8).toList();
-        sliders = activeSet.stems
+        final stems = activeSet.downloadedSet.downloadedStems.take(8).toList();
+        sliders = activeSet.downloadedSet.downloadedStems
             .map((stem) => _calculateVolumeSliderPosition(constraints, stems.indexOf(stem), stem))
             .toList();
       }

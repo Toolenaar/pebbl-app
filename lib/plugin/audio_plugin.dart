@@ -7,9 +7,9 @@ class AudioPlugin {
 
   bool _isInitialized = false;
 
-  Future<bool> initSet(String setName) async {
+  Future<bool> initSet(String setName,List<String> paths) async {
     if (_isInitialized) return true;
-    _isInitialized = await _channel.invokeMethod('initSet', {'name': setName});
+    _isInitialized = await _channel.invokeMethod('initSet', {'name': setName,'paths':paths});
     return _isInitialized;
   }
 

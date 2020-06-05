@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import AudioKit
+import flutter_downloader
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -13,8 +14,15 @@ import AudioKit
     ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
         setupPlatformChannels()
+        FlutterDownloaderPlugin.setPluginRegistrantCallback { registry in
+            if (!registry.hasPlugin("FlutterDownloaderPlugin")) {
+                FlutterDownloaderPlugin.register(with: registry.registrar(forPlugin: "FlutterDownloaderPlugin"))
+            }
+        }
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
+    
+    
     
     func setupPlatformChannels(){
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
@@ -96,8 +104,8 @@ import AudioKit
             result(false)
             return
         }
-        if let name = args["name"] as? String {
-            let success = self.audioPlugin.initSet(name: name)
+        if let name = args["name"] as? String, let paths = args["paths"]  as? Array<String>{
+            let success = self.audioPlugin.initSet(name: name,paths: paths)
             result(success)
             return
         }else{

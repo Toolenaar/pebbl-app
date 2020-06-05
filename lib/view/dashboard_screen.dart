@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/model/audio_set.dart';
-import 'package:pebbl/model/stem.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/view/components/bottom_bar.dart';
+import 'package:pebbl/view/components/progress_view.dart';
 import 'package:pebbl/view/components/set_center_piece.dart';
 import 'package:pebbl/view/components/sets/sets_list.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +24,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     context.read<SetsPresenter>().init();
   }
 
+  @override
+  void dispose() {
+    context.read<SetsPresenter>().dispose();
+    super.dispose();
+  }
+
   void _onTabChanged(int index) {
     setState(() {
       if (index == _activeIndex) {
@@ -35,11 +41,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _newSetSelected(AudioSet audioSet) {
-    context.read<SetsPresenter>().setActiveSet(audioSet);
-    setState(() {
-      _activeIndex = -1;
-    });
-    //TODO start playing
+    //check status and act accordingly
+
+    if (audioSet.status == AudioSetStatus.notDownloaded) {
+      //download set
+     context.read<SetsPresenter>().downloadSet(audioSet);
+    } else if (audioSet.status == AudioSetStatus.downloaded) {
+      //TODO start playing
+      context.read<SetsPresenter>().setActiveSet(audioSet);
+      setState(() {
+        _activeIndex = -1;
+      });
+    }
   }
 
   Widget _viewForIndex() {
@@ -59,31 +72,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final isPlaying = context.select<SetsPresenter, bool>((value) => value.isPlaying);
+    final isInitialized = context.select<SetsPresenter, bool>((value) => value.isInitialized);
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                child: Center(
-                  child: _viewForIndex(),
-                ),
+      body: !isInitialized
+          ? const SizedBox()
+          : SafeArea(
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      child: Center(
+                        child: _viewForIndex(),
+                      ),
+                    ),
+                  ),
+                  RaisedButton(
+                    child: Text(isPlaying ? 'Pause Audio' : 'Play Audio'),
+                    onPressed: isPlaying ? _pause : _play,
+                  ),
+                  const SizedBox(height: 16),
+                  BottomBar(
+                    activeIndex: _activeIndex,
+                    onTabChanged: _onTabChanged,
+                  )
+                ],
               ),
             ),
-            RaisedButton(
-              child: Text(isPlaying ? 'Pause Audio' : 'Play Audio'),
-              onPressed: isPlaying ? _pause : _play,
-            ),
-            const SizedBox(height:16),
-            BottomBar(
-              activeIndex: _activeIndex,
-              onTabChanged: _onTabChanged,
-            )
-          ],
-        ),
-      ),
     );
   }
 }

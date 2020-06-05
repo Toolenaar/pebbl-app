@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		122FF4CB2487746000290B91 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 122FF4CA2487744600290B91 /* libsqlite3.tbd */; };
+		123AB44F24877F1E00EF7519 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 123AB44E24877F1E00EF7519 /* GoogleService-Info.plist */; };
 		12ABE0B52475350B002F3838 /* AudioKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12ABE0B42475350B002F3838 /* AudioKit.framework */; };
 		12ABE0BC247535F2002F3838 /* test_1_paars.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 12ABE0B7247535F1002F3838 /* test_1_paars.mp3 */; };
 		12ABE0BD247535F2002F3838 /* test_1_3blink.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 12ABE0B8247535F1002F3838 /* test_1_3blink.mp3 */; };
@@ -14,7 +16,6 @@
 		12ABE0BF247535F2002F3838 /* test_1_4birds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 12ABE0BA247535F1002F3838 /* test_1_4birds.mp3 */; };
 		12ABE0C0247535F2002F3838 /* test_1_0Core.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 12ABE0BB247535F2002F3838 /* test_1_0Core.mp3 */; };
 		12ABE0C224753D78002F3838 /* AudioPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12ABE0C124753D78002F3838 /* AudioPlugin.swift */; };
-		12ABE0C424765089002F3838 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 12ABE0C324765089002F3838 /* GoogleService-Info.plist */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		45084B1C768D003E880E621A /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC41D0B4FAC7557B6E523897 /* Pods_Runner.framework */; };
@@ -38,6 +39,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		122FF4CA2487744600290B91 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		123AB44E24877F1E00EF7519 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		12ABE0B42475350B002F3838 /* AudioKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AudioKit.framework; sourceTree = "<group>"; };
 		12ABE0B7247535F1002F3838 /* test_1_paars.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = test_1_paars.mp3; sourceTree = "<group>"; };
 		12ABE0B8247535F1002F3838 /* test_1_3blink.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = test_1_3blink.mp3; sourceTree = "<group>"; };
@@ -45,7 +48,6 @@
 		12ABE0BA247535F1002F3838 /* test_1_4birds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = test_1_4birds.mp3; sourceTree = "<group>"; };
 		12ABE0BB247535F2002F3838 /* test_1_0Core.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = test_1_0Core.mp3; sourceTree = "<group>"; };
 		12ABE0C124753D78002F3838 /* AudioPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlugin.swift; sourceTree = "<group>"; };
-		12ABE0C324765089002F3838 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				122FF4CB2487746000290B91 /* libsqlite3.tbd in Frameworks */,
 				12ABE0B52475350B002F3838 /* AudioKit.framework in Frameworks */,
 				45084B1C768D003E880E621A /* Pods_Runner.framework in Frameworks */,
 			);
@@ -81,6 +84,7 @@
 		0B6673F41878C9E8016BD502 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				122FF4CA2487744600290B91 /* libsqlite3.tbd */,
 				CC41D0B4FAC7557B6E523897 /* Pods_Runner.framework */,
 			);
 			name = Frameworks;
@@ -149,8 +153,8 @@
 				97C147021CF9000F007C117D /* Info.plist */,
 				97C146F11CF9000F007C117D /* Supporting Files */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
-				12ABE0C324765089002F3838 /* GoogleService-Info.plist */,
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
+				123AB44E24877F1E00EF7519 /* GoogleService-Info.plist */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				12ABE0C124753D78002F3838 /* AudioPlugin.swift */,
@@ -235,7 +239,7 @@
 				12ABE0C0247535F2002F3838 /* test_1_0Core.mp3 in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				12ABE0BE247535F2002F3838 /* test_1_1low.mp3 in Resources */,
-				12ABE0C424765089002F3838 /* GoogleService-Info.plist in Resources */,
+				123AB44F24877F1E00EF7519 /* GoogleService-Info.plist in Resources */,
 				12ABE0BF247535F2002F3838 /* test_1_4birds.mp3 in Resources */,
 				12ABE0BD247535F2002F3838 /* test_1_3blink.mp3 in Resources */,
 			);

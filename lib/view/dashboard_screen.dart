@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/model/audio_set.dart';
+import 'package:pebbl/model/category.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/view/components/bottom_bar.dart';
-import 'package:pebbl/view/components/progress_view.dart';
+
 import 'package:pebbl/view/components/set_center_piece.dart';
 import 'package:pebbl/view/components/sets/sets_list.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _activeIndex = -1;
-
+  CategoryColorTheme _colorTheme;
   @override
   void initState() {
     super.initState();
@@ -45,7 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     if (audioSet.status == AudioSetStatus.notDownloaded) {
       //download set
-     context.read<SetsPresenter>().downloadSet(audioSet);
+      context.read<SetsPresenter>().downloadSet(audioSet);
     } else if (audioSet.status == AudioSetStatus.downloaded) {
       //TODO start playing
       context.read<SetsPresenter>().setActiveSet(audioSet);
@@ -73,8 +74,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final isPlaying = context.select<SetsPresenter, bool>((value) => value.isPlaying);
     final isInitialized = context.select<SetsPresenter, bool>((value) => value.isInitialized);
+    final colorTheme = AppColors.getActiveColorTheme(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor:
+        colorTheme.backgroundColor,
       body: !isInitialized
           ? const SizedBox()
           : SafeArea(

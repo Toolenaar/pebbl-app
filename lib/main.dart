@@ -20,7 +20,7 @@ class PebblApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => SetsPresenter(),
-        )
+        ), 
       ],
       child: MaterialApp(
         navigatorObservers: [

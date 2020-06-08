@@ -79,7 +79,8 @@ class TextBottomBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? Colors.white : AppColors.inactive;
+    final colorTheme = AppColors.getActiveColorTheme(context);
+    final color = isActive ? colorTheme.accentColor : colorTheme.accentColor40;
     return BodyText2(title, color: color);
   }
 }
@@ -90,7 +91,8 @@ class ActiveSetBottomBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? Colors.white : AppColors.inactive;
+    final colorTheme = AppColors.getActiveColorTheme(context);
+    final color = isActive ? colorTheme.accentColor : colorTheme.accentColor40;
     final activeSet = context.select<SetsPresenter, AudioSet>((value) => value.activeSet);
     return FittedBox(fit: BoxFit.fitWidth, child: BodyText2(activeSet.fullName, color: color));
   }

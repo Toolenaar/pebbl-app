@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +68,7 @@ class _SetCenterpieceState extends State<SetCenterpiece> {
             .map((stem) => _calculateVolumeSliderPosition(constraints, stems.indexOf(stem), stem))
             .toList();
       }
-
+      final colorTheme = AppColors.getActiveColorTheme(context);
       //final centerOffset = center(constraints);
       return Transform.rotate(
         angle: -90 * pi / 180, //rotate so that index 1 is facing upwards
@@ -91,7 +92,11 @@ class _SetCenterpieceState extends State<SetCenterpiece> {
             //         ),
             //       ),
             //     )),
-            Center(child: Image.asset('assets/img/img_center_piece.png')),
+            Center(
+                child: Image.asset(
+              'assets/img/img_center_piece.png',
+              color: colorTheme.accentColor,
+            )),
           ],
         ),
       );

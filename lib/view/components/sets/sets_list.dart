@@ -12,13 +12,13 @@ class SetsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //todo stream from firebase
-    var items = context.select<SetsPresenter, List<SetCategory>>((value) => value.setCategories);
-
+    var items = context.select<SetsPresenter, List<GroupedByCategory>>((value) => value.setCategories);
+    final colorTheme = AppColors.getActiveColorTheme(context);
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         border: Border.all(
-          color: Colors.white,
+          color: colorTheme.accentColor,
         ),
       ),
       child: ListView.builder(
@@ -34,13 +34,13 @@ class SetsList extends StatelessWidget {
 }
 
 class SetsListCategoryListItem extends StatelessWidget {
-  final SetCategory category;
+  final GroupedByCategory category;
   final Function(AudioSet) onSetSelected;
   const SetsListCategoryListItem({Key key, this.category, @required this.onSetSelected}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // final sets =
+    final colorTheme = AppColors.getActiveColorTheme(context);
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -48,7 +48,8 @@ class SetsListCategoryListItem extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: H1Text(
-              category.name,
+              category.category.name,
+              color: colorTheme.accentColor,
               fontSize: 28,
             ),
           ),
@@ -81,7 +82,6 @@ class SetsListSetItem extends StatelessWidget {
   }
 
   Widget _setNameSuffix(Color color, BuildContext context) {
-    
     Widget downloading = _checkIfCurrentlyDownloading(context);
     if (downloading != null) return downloading;
 
@@ -104,7 +104,9 @@ class SetsListSetItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final activeSet = context.select<SetsPresenter, AudioSet>((value) => value.activeSet);
     final isActive = activeSet == audioSet;
-    final color = audioSet.status == AudioSetStatus.downloaded ? Colors.white : AppColors.inactive;
+    final colorTheme = AppColors.getActiveColorTheme(context);
+    final color =
+        audioSet.status == AudioSetStatus.downloaded ? colorTheme.accentColor : colorTheme.accentColor40;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -115,7 +117,12 @@ class SetsListSetItem extends StatelessWidget {
             SizedBox(
               height: 16,
               width: 16,
-              child: isActive ? Image.asset('assets/img/ic_active_indicator.png') : SizedBox(),
+              child: isActive
+                  ? Image.asset(
+                      'assets/img/ic_active_indicator.png',
+                      color: colorTheme.accentColor,
+                    )
+                  : SizedBox(),
             ),
             const SizedBox(width: 8),
             BodyText2(
@@ -139,13 +146,15 @@ class DownloadProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorTheme = AppColors.getActiveColorTheme(context);
+
     return Stack(
       children: <Widget>[
         Container(
           height: 16,
           width: 16,
           decoration: BoxDecoration(
-            color: Colors.white12,
+            color: colorTheme.accentColor40,
             borderRadius: BorderRadius.circular(16),
           ),
         ),
@@ -157,7 +166,7 @@ class DownloadProgress extends StatelessWidget {
               child: Container(
                 width: 16,
                 height: 16 * progress,
-                color: Colors.green,
+                color: colorTheme.accentColor,
               ),
             ),
           ),

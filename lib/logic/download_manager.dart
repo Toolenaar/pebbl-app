@@ -1,12 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
-import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:pebbl/logic/local_storage.dart';
 import 'package:pebbl/logic/path_helper.dart';
+
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/model/stem.dart';
 import 'package:rxdart/rxdart.dart';
@@ -42,12 +43,15 @@ class DownloadedSet {
 }
 
 class DownloadManager {
+  ReceivePort _port = ReceivePort();
   bool isInitialized = false;
   List<DownloadedSet> downloadedSets;
+  List<AudioSetDownloadTask> _tasks = [];
   String _downloadPath;
+  StreamSubscription<dynamic> _downloadSub;
 
   Future init() async {
-    await FlutterDownloader.initialize(debug: false);
+    await FlutterDownloader.initialize(debug: false); //TODO: set false for production
     _downloadPath = await PathHelper.createFolderIfNotExist('Download');
 
     final savedDir = Directory(_downloadPath);
@@ -70,108 +74,132 @@ class DownloadManager {
           print(element.filePath);
         });
         downloadedSets.add(downloadedSet);
-        _continueDownload(downloadedSet);
+        // _continueDownload(downloadedSet);
         audioSet.downloadedSet = downloadedSet;
       }
     }
   }
 
-  void _continueDownload(DownloadedSet downloadedSet) {
-    if (!downloadedSet.isFullyDownloaded) {
-      AudioSetDownloadTask(downloadedSet, _downloadPath)..startDownload();
-    }
-  }
+  // void _continueDownload(DownloadedSet downloadedSet) {
+  //   if (!downloadedSet.isFullyDownloaded) {
+  //     _createTask(downloadedSet);
+  //   }
+  // }
   //TODO: check if device has enough storage
 
   //setup audiosets with downloaded data
 
   //download a new set
-  AudioSetDownloadTask downloadSet(AudioSet audioSet) {
+  Future<AudioSetDownloadTask> downloadSet(AudioSet audioSet) async {
     DownloadedSet downloadedSet = audioSet.downloadedSet ??
         DownloadedSet(
           setId: audioSet.id,
           downloadedStems: audioSet.stems.map((s) => s.copyWith()).toList(),
         );
 
-    final task = AudioSetDownloadTask(
-        downloadedSet, _downloadPath + '${Platform.pathSeparator}${downloadedSet.setId}');
-    task.startDownload();
+    final task = await _createTask(downloadedSet);
+    
     return task;
   }
-  //update on percentage
 
+  Future<AudioSetDownloadTask> _createTask(DownloadedSet downloadedSet) async {
+    //if no taks make sure to clear pending downloads
+
+    _setupProgressListener();
+    var task = AudioSetDownloadTask(downloadedSet);
+    _tasks.add(task);
+
+    await task.startDownload();
+    return task;
+  }
+
+  //update on percentage
+  void _setupProgressListener() {
+    IsolateNameServer.registerPortWithName(_port.sendPort, 'download_port');
+    if (_downloadSub == null) {
+      _downloadSub = _port.listen((dynamic data) {
+        _calculateProgress(data[0], data[2]);
+        _handleComplete(data[0], data[1]);
+      });
+    }
+
+    FlutterDownloader.registerCallback(downloadCallback);
+  }
+
+  void _handleComplete(String id, DownloadTaskStatus status) async {
+    // set complete on active download
+    var _completedTask;
+    for (var task in _tasks) {
+      if (task.hasActiveTask(id)) {
+        if (status.value == DownloadTaskStatus.complete.value) {
+          bool isCompleted = await task.handleComplete(id, status);
+          if (isCompleted) _completedTask = task;
+        }
+      }
+    }
+    //remove active downloads
+    if (_completedTask != null) {
+      _tasks.remove(_completedTask);
+    }
+
+    // if no active downloads close port
+    if (_tasks.length == 0) {}
+  }
+
+  void dispose() {
+    _downloadSub.cancel();
+    _port.close();
+    IsolateNameServer.removePortNameMapping('download_port');
+  }
+
+  void _calculateProgress(String id, int progress) {
+    //set progress on active download
+    for (var task in _tasks) {
+      if (task.hasActiveTask(id)) {
+        task.calculateProgress(id, progress);
+      }
+    }
+  }
+
+  static void downloadCallback(String id, DownloadTaskStatus status, int progress) {
+    final SendPort send = IsolateNameServer.lookupPortByName('download_port');
+    send.send([id, status, progress]);
+  }
 }
 
 class AudioSetDownloadTask {
   static FirebaseStorage storage = FirebaseStorage();
   final DownloadedSet downloadedSet;
-  final String path;
+  String _path;
   Function onComplete;
   int _completedCount = 0;
-  ReceivePort _port = ReceivePort();
 
   Map<String, int> progressMap = {};
 
   final BehaviorSubject<double> downloadProgressSubject = BehaviorSubject.seeded(0);
   ValueStream<double> get downloadProgressStream => downloadProgressSubject.stream;
 
-  AudioSetDownloadTask(this.downloadedSet, this.path);
+  bool hasActiveTask(String taskId) {
+    for (var stem in downloadedSet.downloadedStems) {
+      if (stem.downloadTaskId == taskId) return true;
+    }
+    return false;
+  }
+
+  AudioSetDownloadTask(this.downloadedSet);
 
   Future startDownload() async {
     //check if folder exists if not create it
-    await PathHelper.createFolderIfNotExist('Download' + Platform.pathSeparator + downloadedSet.setId);
+    final pathName = 'Download' + Platform.pathSeparator + downloadedSet.setId;
+    await PathHelper.deleteFolderIfExists(pathName); //clear data first
+    _path = await PathHelper.createFolderIfNotExist(pathName);
 
-    _setupProgressListener();
     for (var stem in downloadedSet.downloadedStems) {
-      //check if download already started
-      if (stem.downloadTaskId != null && stem.filePath == null) {
-        stem.downloadTaskId = await FlutterDownloader.resume(taskId: stem.downloadTaskId);
-      } else {
-        //create a new download task and update download set
-        stem.downloadTaskId = await _enqueueDownload(await _getDownloadUrl(stem), stem.id);
-      }
+      //create a new download task and update download set
+      stem.downloadTaskId = await _enqueueDownload(await _getDownloadUrl(stem), stem.id);
+
       await _updateDownloadedSetLocalStorage();
     }
-  }
-
-  void _setupProgressListener() {
-    IsolateNameServer.registerPortWithName(_port.sendPort, 'downloader_send_port');
-    _port.listen((dynamic data) {
-      _calculateProgress(data[0], data[2]);
-      _handleComplete(data[0], data[1]);
-    });
-
-    FlutterDownloader.registerCallback(downloadCallback);
-  }
-
-  void _handleComplete(String id, DownloadTaskStatus status) async {
-    if (status.value == DownloadTaskStatus.complete.value) {
-      _completedCount += 1;
-      print('completed download $_completedCount');
-      final stem = downloadedSet.downloadedStems.where((e) => e.downloadTaskId == id).first;
-      stem.filePath =
-          'Download${Platform.pathSeparator}${downloadedSet.setId}${Platform.pathSeparator}${stem.id}';
-      print(stem.filePath);
-      await _updateDownloadedSetLocalStorage();
-      if (onComplete != null && _completedCount == downloadedSet.downloadedStems.length) onComplete();
-    }
-  }
-
-  void _calculateProgress(String id, int progress) {
-    progressMap[id] = progress;
-    int total = 0;
-    progressMap.forEach((key, value) {
-      total += value;
-    });
-    var stemDonwloadProgress =
-        total / downloadedSet.downloadedStems.length; //devide by total to stay between 0 and 100
-    print('Progress $stemDonwloadProgress');
-    downloadProgressSubject.add(stemDonwloadProgress);
-  }
-
-  static void downloadCallback(String id, DownloadTaskStatus status, int progress) {
-    final SendPort send = IsolateNameServer.lookupPortByName('downloader_send_port');
-    send.send([id, status, progress]);
   }
 
   Future _updateDownloadedSetLocalStorage() async {
@@ -189,10 +217,38 @@ class AudioSetDownloadTask {
     final taskId = await FlutterDownloader.enqueue(
       url: url,
       fileName: fileName,
-      savedDir: path,
+      savedDir: _path,
       showNotification: true, // show download progress in status bar (for Android)
       openFileFromNotification: false, // click on notification to open downloaded file (for Android)
     );
     return taskId;
+  }
+
+  Future<bool> handleComplete(String id, DownloadTaskStatus status) async {
+    _completedCount += 1;
+    print('completed download $_completedCount');
+    final stem = downloadedSet.downloadedStems.where((e) => e.downloadTaskId == id).first;
+    stem.filePath =
+        'Download${Platform.pathSeparator}${downloadedSet.setId}${Platform.pathSeparator}${stem.id}';
+    print(stem.filePath);
+    await _updateDownloadedSetLocalStorage();
+
+    if (onComplete != null && _completedCount == downloadedSet.downloadedStems.length) {
+      onComplete();
+      return true;
+    }
+    return false;
+  }
+
+  void calculateProgress(String id, int progress) {
+    progressMap[id] = progress;
+    int total = 0;
+    progressMap.forEach((key, value) {
+      total += value;
+    });
+    var stemDonwloadProgress =
+        total / downloadedSet.downloadedStems.length; //devide by total to stay between 0 and 100
+    print('Progress $stemDonwloadProgress');
+    downloadProgressSubject.add(stemDonwloadProgress);
   }
 }

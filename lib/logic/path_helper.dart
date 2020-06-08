@@ -9,7 +9,18 @@ class PathHelper {
     final savedDir = Directory(path);
     bool hasExisted = await savedDir.exists();
     if (!hasExisted) {
-      savedDir.create();
+      await savedDir.create();
+    }
+    return path;
+  }
+
+   static Future<String> deleteFolderIfExists(String name) async {
+    var path = (await _findLocalPath()) + Platform.pathSeparator + name;
+
+    final savedDir = Directory(path);
+    bool hasExisted = await savedDir.exists();
+    if (hasExisted) {
+      await savedDir.delete(recursive: true);
     }
     return path;
   }

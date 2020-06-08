@@ -1,19 +1,27 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/download_manager.dart';
 import 'package:pebbl/logic/local_storage.dart';
 import 'package:pebbl/model/audio_set.dart';
+import 'package:pebbl/model/category.dart';
 import 'package:pebbl/model/services/audio_service.dart';
+import 'package:pebbl/model/services/category_service.dart';
 import 'package:pebbl/plugin/audio_plugin.dart';
 
 class SetsPresenter with ChangeNotifier {
   static AudioService _service = AudioService();
+  static CategoryService _categoryService = CategoryService();
   static AudioPlugin _plugin = AudioPlugin();
   static DownloadManager _downloadManager = DownloadManager();
+
+  CategoryColorTheme get activeColorTheme => activeSet?.category?.colorTheme ?? AppColors.colorTheme;
+
   AudioSet activeSet;
   List<AudioSet> loadedSets;
-  List<SetCategory> setCategories = [];
+  List<GroupedByCategory> setCategories = [];
+  List<Category> _categories = [];
   StreamSubscription<List<AudioSet>> setsSubscription;
   bool get isInitialized {
     return _downloadManager.isInitialized && setCategories.length > 0;
@@ -24,6 +32,7 @@ class SetsPresenter with ChangeNotifier {
   bool isPlaying = false;
 
   void init() async {
+    _categories = await _categoryService.fetchCategories();
     fetchSets();
     await _downloadManager.init();
     notifyListeners();
@@ -69,29 +78,46 @@ class SetsPresenter with ChangeNotifier {
   fetchSets() {
     setsSubscription = _service.fetchSetsStream().listen((sets) async {
       loadedSets = sets;
-      setCategories = SetCategory.fromAudioSetList(sets);
+
+      //for each set pair a category
+      _attachCategory();
+      //categories grouped
+      setCategories = GroupedByCategory.fromAudioSetList(sets);
       if (activeSet == null) activeSet = setCategories.first.sets.first;
       await _loadDownloadedSets();
     });
   }
 
-  void downloadSet(AudioSet audioSet) async {
-    AudioSetDownloadTask task = _downloadManager.downloadSet(audioSet);
-    StreamSubscription<double> downloadSub;
+  void _attachCategory() {
+    for (var audioSet in loadedSets) {
+      final cat = _categories.where((c) => c.id == audioSet.categoryId);
+      if (cat.isNotEmpty) {
+        audioSet.category = cat.first;
+      }
+    }
+  }
 
-    task.onComplete = () async {
-      audioSet.downloadedSet = DownloadedSet.fromJsonString(await LocalStorage.getString(audioSet.id));
-      currentDownloadProgress[audioSet.id] = null;
-      currentDownloadProgress = Map.from(currentDownloadProgress); //create a new to trigger listeners
-      downloadSub.cancel();
-      notifyListeners();
-    };
+  Future downloadSet(AudioSet audioSet) async {
+    try {
+      AudioSetDownloadTask task = await _downloadManager.downloadSet(audioSet);
+      StreamSubscription<double> downloadSub;
 
-    downloadSub = task.downloadProgressStream.listen((event) {
-      currentDownloadProgress[audioSet.id] = event;
-      currentDownloadProgress = Map.from(currentDownloadProgress); //create a new to trigger listeners
-      notifyListeners();
-    });
-    //remove the download task
+      task.onComplete = () async {
+        audioSet.downloadedSet = DownloadedSet.fromJsonString(await LocalStorage.getString(audioSet.id));
+        currentDownloadProgress[audioSet.id] = null;
+        currentDownloadProgress = Map.from(currentDownloadProgress); //create a new to trigger listeners
+        downloadSub.cancel();
+        notifyListeners();
+      };
+
+      downloadSub = task.downloadProgressStream.listen((event) {
+        currentDownloadProgress[audioSet.id] = event;
+        currentDownloadProgress = Map.from(currentDownloadProgress); //create a new to trigger listeners
+        notifyListeners();
+      });
+      //remove the download task
+    } catch (e) {
+      print(e);
+    }
   }
 }

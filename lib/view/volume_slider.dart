@@ -12,6 +12,7 @@ class VolumeSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+      final colorTheme = AppColors.getActiveColorTheme(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -23,11 +24,11 @@ class VolumeSlider extends StatelessWidget {
           ),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-            activeTrackColor: Colors.white,
-            inactiveTrackColor: Colors.white.withOpacity(0.3),
+            activeTrackColor: colorTheme.accentColor,
+            inactiveTrackColor:colorTheme.accentColor40,
             trackShape: RectangularSliderTrackShape(),
             trackHeight: 1.0,
-            thumbColor: AppColors.background,
+            thumbColor:colorTheme.backgroundColor,
             thumbShape: CustomThumbShape(),
             overlayColor: Colors.transparent,
             overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),

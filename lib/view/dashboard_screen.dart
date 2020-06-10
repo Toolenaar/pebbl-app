@@ -3,6 +3,7 @@ import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/model/category.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
+import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/components/bottom_bar.dart';
 
 import 'package:pebbl/view/components/set_center_piece.dart';
@@ -23,12 +24,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     context.read<SetsPresenter>().init();
-  }
-
-  @override
-  void dispose() {
-    context.read<SetsPresenter>().dispose();
-    super.dispose();
   }
 
   void _onTabChanged(int index) {
@@ -76,8 +71,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final isInitialized = context.select<SetsPresenter, bool>((value) => value.isInitialized);
     final colorTheme = AppColors.getActiveColorTheme(context);
     return Scaffold(
-      backgroundColor:
-        colorTheme.backgroundColor,
+      backgroundColor: colorTheme.backgroundColor,
       body: !isInitialized
           ? const SizedBox()
           : SafeArea(
@@ -91,9 +85,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                   ),
-                  RaisedButton(
-                    child: Text(isPlaying ? 'Pause Audio' : 'Play Audio'),
-                    onPressed: isPlaying ? _pause : _play,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      RaisedButton(
+                        child: Text(isPlaying ? 'Pause Audio' : 'Play Audio'),
+                        onPressed: isPlaying ? _pause : _play,
+                      ),
+                      RaisedButton(
+                          child: Text('Sign-out'),
+                          onPressed: () async {
+                            await context.read<UserPresenter>().signOut();
+                          }),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   BottomBar(

@@ -32,6 +32,7 @@ class SetsPresenter with ChangeNotifier {
   bool isPlaying = false;
 
   void init() async {
+    if (isInitialized) return;
     _categories = await _categoryService.fetchCategories();
     fetchSets();
     await _downloadManager.init();

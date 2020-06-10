@@ -1,18 +1,37 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:pebbl/logic/app_initializer.dart';
+import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
+import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/dashboard_screen.dart';
 
 import 'package:provider/provider.dart';
+
+import 'view/registration/login_start_screen.dart';
 
 void main() {
   runApp(PebblApp());
 }
 
-class PebblApp extends StatelessWidget {
-  final FirebaseAnalytics analytics = FirebaseAnalytics();
+class PebblApp extends StatefulWidget {
   PebblApp({Key key}) : super(key: key);
+
+  @override
+  _PebblAppState createState() => _PebblAppState();
+}
+
+class _PebblAppState extends State<PebblApp> {
+  static UserPresenter _userPresenter = UserPresenter();
+  final FirebaseAnalytics analytics = FirebaseAnalytics();
+
+  @override
+  void initState() {
+    _userPresenter.initialize();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +39,25 @@ class PebblApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => SetsPresenter(),
-        ), 
+        ),
+        Provider(
+          create: (context) => _userPresenter,
+        )
       ],
       child: MaterialApp(
-        navigatorObservers: [
-          FirebaseAnalyticsObserver(analytics: analytics),
-        ],
-        home: DashboardScreen(),
-      ),
+          theme: ThemeData(
+            accentColor: AppColors.text,
+            textTheme: GoogleFonts.karlaTextTheme(
+              Theme.of(context).textTheme,
+            ),
+          ),
+          navigatorObservers: [
+            FirebaseAnalyticsObserver(analytics: analytics),
+          ],
+          home: AppInitializer(
+            homePage: DashboardScreen(),
+            loginPage: LoginStartScreen(),
+          )),
     );
   }
 }

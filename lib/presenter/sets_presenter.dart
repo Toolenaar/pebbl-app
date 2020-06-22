@@ -9,6 +9,7 @@ import 'package:pebbl/model/category.dart';
 import 'package:pebbl/model/services/audio_service.dart';
 import 'package:pebbl/model/services/category_service.dart';
 import 'package:pebbl/plugin/audio_plugin.dart';
+import 'package:pebbl/presenter/soundscape_manager.dart';
 
 class SetsPresenter with ChangeNotifier {
   static AudioService _service = AudioService();
@@ -18,6 +19,7 @@ class SetsPresenter with ChangeNotifier {
 
   CategoryColorTheme get activeColorTheme => activeSet?.category?.colorTheme ?? AppColors.colorTheme;
 
+  SoundscapeManager soundscapeManager;
   AudioSet activeSet;
   List<AudioSet> loadedSets;
   List<GroupedByCategory> setCategories = [];
@@ -47,7 +49,13 @@ class SetsPresenter with ChangeNotifier {
 
   void setActiveSet(AudioSet audioSet) {
     activeSet = audioSet;
+    
     notifyListeners();
+  }
+
+  void setSoundscapeManager() {
+    final setsInCategory = loadedSets.where((e) => e.categoryId == activeSet.categoryId).toList();
+    soundscapeManager = SoundscapeManager(audioSets:setsInCategory);
   }
 
   void changeStemVolume(String fileName, double volume) {
@@ -79,12 +87,14 @@ class SetsPresenter with ChangeNotifier {
   fetchSets() {
     setsSubscription = _service.fetchSetsStream().listen((sets) async {
       loadedSets = sets;
-
       //for each set pair a category
       _attachCategory();
       //categories grouped
       setCategories = GroupedByCategory.fromAudioSetList(sets);
-      if (activeSet == null) activeSet = setCategories.first.sets.first;
+      if (activeSet == null){
+         activeSet = setCategories.first.sets.first;
+         setSoundscapeManager() ;
+      }
       await _loadDownloadedSets();
     });
   }
@@ -121,4 +131,5 @@ class SetsPresenter with ChangeNotifier {
       print(e);
     }
   }
+
 }

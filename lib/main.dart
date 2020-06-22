@@ -42,7 +42,7 @@ class _PebblAppState extends State<PebblApp> {
         ),
         Provider(
           create: (context) => _userPresenter,
-        )
+        ),
       ],
       child: MaterialApp(
           theme: ThemeData(

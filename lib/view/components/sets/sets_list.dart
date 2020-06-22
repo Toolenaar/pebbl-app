@@ -14,21 +14,24 @@ class SetsList extends StatelessWidget {
     //todo stream from firebase
     var items = context.select<SetsPresenter, List<GroupedByCategory>>((value) => value.setCategories);
     final colorTheme = AppColors.getActiveColorTheme(context);
-    return Container(
+    return Padding(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: colorTheme.accentColor,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: colorTheme.accentColor,
+          ),
         ),
+        child: ListView.builder(
+            itemBuilder: (context, index) {
+              return SetsListCategoryListItem(
+                onSetSelected: onSetSelected,
+                category: items[index],
+              );
+            },
+            itemCount: items.length),
       ),
-      child: ListView.builder(
-          itemBuilder: (context, index) {
-            return SetsListCategoryListItem(
-              onSetSelected: onSetSelected,
-              category: items[index],
-            );
-          },
-          itemCount: items.length),
     );
   }
 }

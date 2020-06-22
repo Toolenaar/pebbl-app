@@ -37,6 +37,7 @@ class AudioSet {
   final String name;
   final String id;
   final String fileName;
+  final String image;
   DownloadedSet downloadedSet;
 
   AudioSetStatus get status {
@@ -45,7 +46,7 @@ class AudioSet {
     return AudioSetStatus.unknown;
   }
 
-  AudioSet({this.stems, this.category, this.categoryId, this.name, this.fileName, this.id});
+  AudioSet({this.stems, this.category, this.categoryId, this.name, this.fileName, this.id, this.image});
 
   List<String> get downloadedStemPaths {
     return downloadedSet?.downloadedStems?.map((s) => s.filePath)?.toList() ?? null;
@@ -53,15 +54,32 @@ class AudioSet {
 
   static AudioSet fromJson(Map data, String id) {
     return AudioSet(
-        id: id,
-        fileName: data['fileName'],
-        name: data['name'],
-        categoryId: data['categoryId'],
-        stems: List<Stem>.from(data['stems'].map((s) => Stem.fromJson(s))));
+      id: id,
+      fileName: data['fileName'],
+      image: data['image'],
+      name: data['name'],
+      categoryId: data['categoryId'],
+      stems: List<Stem>.from(
+        data['stems'].map(
+          (s) => Stem.fromJson(s),
+        ),
+      ),
+    );
   }
 
   String get fullName {
     final cat = category.name[0];
     return '$cat:$name';
+  }
+
+  AudioSet copyWith() {
+    return AudioSet(
+        category: category,
+        id: id,
+        fileName: fileName,
+        image: image,
+        name: name,
+        categoryId: categoryId,
+        stems: stems);
   }
 }

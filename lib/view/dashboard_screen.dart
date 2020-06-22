@@ -6,8 +6,8 @@ import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/components/bottom_bar.dart';
 
-import 'package:pebbl/view/components/set_center_piece.dart';
 import 'package:pebbl/view/components/sets/sets_list.dart';
+import 'package:pebbl/view/home/soundscape_slider.dart';
 import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -45,6 +45,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } else if (audioSet.status == AudioSetStatus.downloaded) {
       //TODO start playing
       context.read<SetsPresenter>().setActiveSet(audioSet);
+       context.read<SetsPresenter>().setSoundscapeManager();
       setState(() {
         _activeIndex = -1;
       });
@@ -52,7 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _viewForIndex() {
-    if (_activeIndex == -1) return SetCenterpiece();
+    if (_activeIndex == -1) return SoundscapeSlider();
     if (_activeIndex == 0) return SetsList(onSetSelected: _newSetSelected);
     return const SizedBox();
   }
@@ -79,7 +80,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: <Widget>[
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.all(24),
                       child: Center(
                         child: _viewForIndex(),
                       ),

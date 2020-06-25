@@ -2,12 +2,16 @@ import UIKit
 import Flutter
 import AudioKit
 import flutter_downloader
+import AVFoundation
+import MediaPlayer
 
 @UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate,FlutterStreamHandler {
     
+    
+    //https://medium.com/@quangtqag/background-audio-player-sync-control-center-516243c2cdd1
     lazy var audioPlugin = AudioPlugin()
-    
+
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -19,9 +23,93 @@ import flutter_downloader
                 FlutterDownloaderPlugin.register(with: registry.registrar(forPlugin: "FlutterDownloaderPlugin"))
             }
         }
+        
+        
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            if #available(iOS 10.0, *) {
+                try audioSession.setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.default)
+            } else {
+                // Fallback on earlier versions
+            }
+        } catch let error as NSError {
+            print("Setting category to AVAudioSessionCategoryPlayback failed: \(error)")
+        }
+        
+        setupRemoteTransportControls()
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
+    //Stream handlers
+    func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        audioPlugin.playerEventSink = events
+        return nil
+    }
     
+    func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        audioPlugin.playerEventSink = nil
+           return nil
+    }
+    
+   
+    
+    func setupRemoteTransportControls() {
+        // Get the shared MPRemoteCommandCenter
+        let commandCenter = MPRemoteCommandCenter.shared()
+        
+        // Add handler for Play Command
+        commandCenter.playCommand.addTarget { [unowned self] event in
+            
+            if let set = self.audioPlugin.currentSet {
+                let success = self.audioPlugin.pauseSet(name: set)
+                if(success){
+                    return .success
+                }
+            }
+            
+            return .commandFailed
+        }
+
+        // Add handler for Pause Command
+        commandCenter.pauseCommand.addTarget { [unowned self] event in
+            if let set = self.audioPlugin.currentSet {
+                let success = self.audioPlugin.playSet(name: set)
+                if(success){
+                    return .success
+                }
+            }
+            return .commandFailed
+        }
+    }
+    
+    func setupNowPlaying(setName:String) {
+        // Define Now Playing Info
+        
+
+      
+        if let player = audioPlugin.refPlayer{
+            var nowPlayingInfo = [String : Any]()
+                
+            if let image = UIImage(named: "cat") {
+                if #available(iOS 10.0, *) {
+                    nowPlayingInfo[MPMediaItemPropertyArtwork] =
+                        MPMediaItemArtwork(boundsSize: image.size) { size in
+                            return image
+                    }
+                } else {
+                    // Fallback on earlier versions
+                }
+                  }
+            
+            nowPlayingInfo[MPMediaItemPropertyTitle] = setName
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
+            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
+            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = 1
+            // Set the metadata
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+            
+        }
+      
+    }
     
     
     func setupPlatformChannels(){
@@ -33,6 +121,10 @@ import flutter_downloader
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             self.handleResult(call: call, result:result)
         })
+        
+        let playbackEventChannel = FlutterEventChannel(name: "pebbl_plugin/playback",
+                                                     binaryMessenger: controller.binaryMessenger)
+           playbackEventChannel.setStreamHandler(self)
     }
     
     func handleResult(call: FlutterMethodCall, result: @escaping FlutterResult){
@@ -78,6 +170,9 @@ import flutter_downloader
          NSLog("\nINITIALIZE PLAYING SET")
         if let name = args["name"] as? String {
             let success = self.audioPlugin.playSet(name: name)
+            if(success){
+                self.setupNowPlaying(setName: name)
+            }
             result(success)
             return
         }else{

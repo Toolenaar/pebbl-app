@@ -14,13 +14,39 @@ class SoundscapeSlider extends StatefulWidget {
 
 class _SoundscapeSliderState extends State<SoundscapeSlider> {
   SoundscapeManager _manager;
+  PageController _controller;
+
+  bool _jumpFromSystemChange = false;
+  bool _jumpFromUserChange = false;
 
   @override
   void initState() {
     _manager = context.read<SetsPresenter>().soundscapeManager;
     _manager.queueNextSet();
+    final initialPage = _manager.activeSet == null ? 0 : _manager.playQueue.indexOf(_manager.activeSet);
+    _controller = PageController(initialPage: initialPage);
+
+    _manager.setStateListener(_onStateChanged);
 
     super.initState();
+  }
+
+  void _onStateChanged(String state) {
+    if (mounted) {
+      if (state == 'completed') {
+        if (!_jumpFromUserChange) {
+          _jumpFromSystemChange = true;
+          _controller.nextPage(curve: Curves.easeInOut, duration: Duration(milliseconds: 300));
+        }
+        _jumpFromUserChange = false;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _manager.removeStateListener();
+    super.dispose();
   }
 
   // @override
@@ -31,20 +57,22 @@ class _SoundscapeSliderState extends State<SoundscapeSlider> {
   //   super.didChangeDependencies();
   // }
 
-  void _play() async {
-    context.read<SetsPresenter>().setActiveSet(_manager.activeSet);
-    context.read<SetsPresenter>().playActiveSet();
-  }
-
   @override
   Widget build(BuildContext context) {
     return PageView.builder(
+        controller: _controller,
         onPageChanged: (index) {
+          if (_jumpFromSystemChange) {
+            _jumpFromSystemChange = false;
+            return;
+          }
+
           if (index == _manager.playQueue.length - 1) {
             _manager.queueNextSet();
           }
           _manager.activeSet = _manager.playQueue[index];
-          _play();
+          _manager.play();
+          _jumpFromUserChange = true;
           setState(() {});
         },
         itemCount: _manager.playQueue.length,

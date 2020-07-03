@@ -8,9 +8,8 @@ import AudioKit
 import Foundation
 class AudioPlugin {
     
-    var sets: [String: Array<String>] = [:]
-    
     var refPlayer: AKPlayer?
+    var audioPaths: Array<String>?
     var activeAudioPlayers: [String: AKPlayer]?
     var playerEventSink: FlutterEventSink?
     
@@ -23,27 +22,28 @@ class AudioPlugin {
     //SETUP
     func initSet(name:String, paths: Array<String>) -> Bool{
         NSLog("\nSETTING UP SET \(name)")
+        dispose()
+        
         //setup each stem
-        sets[name] = paths
-        if let set = sets[name]{
-            do {
-                try setupStems(stems: set)
-                
-                if let players = activeAudioPlayers {
-                    mixer = AKMixer(players.map{$0.value})
-                    booster = AKBooster(mixer)
-                    AudioKit.output = booster
-                    AKSettings.playbackWhileMuted = true
-                    try AudioKit.start()
-                }else{
-                    return false
-                }
-            } catch {
+        audioPaths = paths
+        
+        do {
+            try setupStems()
+            
+            if let players = activeAudioPlayers {
+                mixer = AKMixer(players.map{$0.value})
+                booster = AKBooster(mixer)
+                AudioKit.output = booster
+                AKSettings.playbackWhileMuted = true
+              
+                try AudioKit.start()
+            }else{
                 return false
             }
-            return true
-        } 
-        return false
+        } catch {
+            return false
+        }
+        return true
     }
     
     func updatePlayerState(state:String){
@@ -53,10 +53,12 @@ class AudioPlugin {
         eventSink(state)
     }
     
-    private func setupStems(stems: Array<String>) throws{
+    private func setupStems() throws{
         activeAudioPlayers = [String: AKPlayer]()
-        for stem in stems {
-            try self.setupStem(path: stem)
+        if let paths = audioPaths{
+            for path in paths {
+                try self.setupStem(path: path)
+            }
         }
     }
     
@@ -66,6 +68,7 @@ class AudioPlugin {
         player.isLooping = false
         player.buffering = .always
         player.volume = 1.0
+        player.prepare()
         activeAudioPlayers?[path] = player
     }
     
@@ -82,6 +85,7 @@ class AudioPlugin {
         }
         return false
     }
+    
     func playSet(name:String) -> Bool{
         NSLog("\nSTART PLAYING SET \(name)")
         currentSet = name
@@ -105,29 +109,69 @@ class AudioPlugin {
         for player in players {
             try self.playStem(player: player)
         }
+       
         updatePlayerState(state: "started")
     }
+    
     private func completed(){
         updatePlayerState(state: "completed")
     }
+    
     private func pausePlayers(players: Array<AKPlayer>) throws{
         
         for player in players {
             try self.pauseStem(player: player)
         }
+       
         updatePlayerState(state: "stopped")
     }
     
     func playStem(player:AKPlayer) throws {
+        NSLog("\nPLAYING STEM \(player.audioFile?.directoryPath.absoluteString ?? "")")
         player.play()
     }
+
     func pauseStem(player:AKPlayer) throws {
         player.stop()
     }
+    
     func changeStemVolume(name:String,volume:Double){
         NSLog("\nCHANGING VOLUME \(name)")
         if let player = activeAudioPlayers?[name] {
             player.volume = volume
         }
+    }
+    
+    //cleanup
+    func dispose(){
+         NSLog("\nDISPOSING")
+        if let players = activeAudioPlayers {
+            let playerList = players.map{$0.value}
+            for player in playerList {
+                player.stop()
+                player.detach()
+            }
+        }
+       
+        if let mixer = mixer {
+            mixer.stop()
+            mixer.detach()
+        }
+        if let booster = booster {
+            booster.stop()
+            booster.detach()
+        }
+        audioPaths = nil
+        activeAudioPlayers = nil
+        mixer = nil
+        booster = nil
+        refPlayer = nil
+        do {
+            try AudioKit.stop()
+        } catch  let error as NSError {
+            NSLog("\n \(error)")
+        }
+        
+        
     }
 }

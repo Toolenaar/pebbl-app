@@ -36,9 +36,23 @@ import MediaPlayer
             print("Setting category to AVAudioSessionCategoryPlayback failed: \(error)")
         }
         
+      
         setupRemoteTransportControls()
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
+    
+    override func applicationWillTerminate(_ application: UIApplication) {
+        audioPlugin.dispose()
+        
+        do {
+            try AudioKit.stop()
+            try AudioKit.shutdown()
+        } catch  let error as NSError {
+            NSLog("\n \(error)")
+        }
+       
+    }
+    
     //Stream handlers
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         audioPlugin.playerEventSink = events
@@ -83,9 +97,6 @@ import MediaPlayer
     
     func setupNowPlaying(setName:String) {
         // Define Now Playing Info
-        
-
-      
         if let player = audioPlugin.refPlayer{
             var nowPlayingInfo = [String : Any]()
                 
@@ -111,6 +122,7 @@ import MediaPlayer
       
     }
     
+   
     
     func setupPlatformChannels(){
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController

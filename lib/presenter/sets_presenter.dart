@@ -29,6 +29,11 @@ class SetsPresenter with ChangeNotifier {
     return _downloadManager.isInitialized && setCategories.length > 0;
   }
 
+  List<AudioSet> get setsInCategory {
+    if (activeSet == null) return [];
+    return loadedSets.where((e) => e.categoryId == activeSet.categoryId).toList();
+  }
+
   Map<String, double> currentDownloadProgress = {};
 
   bool isPlaying = false;
@@ -49,7 +54,6 @@ class SetsPresenter with ChangeNotifier {
   }
 
   void _audioPlayerStateChanged(Object object) {
-  
     if (soundscapeManager != null) {
       soundscapeManager.notifyPlayerStateChange(object);
     }
@@ -61,13 +65,18 @@ class SetsPresenter with ChangeNotifier {
 
   void setActiveSet(AudioSet audioSet) {
     activeSet = audioSet;
-
     notifyListeners();
   }
 
   void setSoundscapeManager() {
-    final setsInCategory = loadedSets.where((e) => e.categoryId == activeSet.categoryId).toList();
-    soundscapeManager = SoundscapeManager(audioSets: setsInCategory,presenter: this);
+    if (soundscapeManager != null) {
+      soundscapeManager.dispose();
+    }
+    soundscapeManager = SoundscapeManager(presenter: this);
+    if (activeSet != null) {
+      soundscapeManager.addSetToQueue(activeSet);
+      soundscapeManager.playNext(firstPlay: true);
+    }
   }
 
   void changeStemVolume(String fileName, double volume) {
@@ -103,8 +112,7 @@ class SetsPresenter with ChangeNotifier {
       _attachCategory();
       //categories grouped
       setCategories = GroupedByCategory.fromAudioSetList(sets);
-      if (activeSet == null) {
-        activeSet = setCategories.first.sets.first;
+      if (soundscapeManager == null) {
         setSoundscapeManager();
       }
       await _loadDownloadedSets();

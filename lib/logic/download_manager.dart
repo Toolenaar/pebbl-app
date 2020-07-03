@@ -25,6 +25,10 @@ class DownloadedSet {
     return DownloadedSet(setId: data['setId'], downloadedStems: Stem.fromJsonList(data['downloadedStems']));
   }
 
+  DownloadedSet copyWith() {
+    return DownloadedSet(setId: setId, downloadedStems: downloadedStems.map((e) => e.copyWith()).toList());
+  }
+
   String toJsonString() {
     final json = toJson();
     return jsonEncode(json);
@@ -98,7 +102,7 @@ class DownloadManager {
         );
 
     final task = await _createTask(downloadedSet);
-    
+
     return task;
   }
 

@@ -8,7 +8,8 @@ import 'package:pebbl/model/stem.dart';
 import 'package:pebbl/view/volume_slider.dart';
 
 class SetCenterpiece extends StatefulWidget {
-  const SetCenterpiece({Key key}) : super(key: key);
+  final AudioSet audioSet;
+  const SetCenterpiece({Key key, @required this.audioSet}) : super(key: key);
 
   @override
   _SetCenterpieceState createState() => _SetCenterpieceState();
@@ -58,13 +59,14 @@ class _SetCenterpieceState extends State<SetCenterpiece> {
 
   @override
   Widget build(BuildContext context) {
-    final activeSet = context.select<SetsPresenter, AudioSet>((value) => value.activeSet);
+    //final activeSet = context.select<SetsPresenter, AudioSet>((value) => value.activeSet);
+    if (widget.audioSet.downloadedSet == null) return Container();
     final isPlaying = context.select<SetsPresenter, bool>((value) => value.isPlaying);
     return LayoutBuilder(builder: (context, constraints) {
       var sliders = [];
       if (isPlaying) {
-        final stems = activeSet.downloadedSet.downloadedStems.take(8).toList();
-        sliders = activeSet.downloadedSet.downloadedStems
+        final stems = widget.audioSet.downloadedSet.downloadedStems.take(8).toList();
+        sliders = widget.audioSet.downloadedSet.downloadedStems
             .map((stem) => _calculateVolumeSliderPosition(constraints, stems.indexOf(stem), stem))
             .toList();
       }
@@ -93,9 +95,13 @@ class _SetCenterpieceState extends State<SetCenterpiece> {
             //       ),
             //     )),
             Center(
-                child: Image.asset(
-              'assets/img/img_center_piece.png',
-              color: colorTheme.accentColor,
+                child: Container(
+              height: 128,
+              width: 128,
+              child: Image.network(
+                widget.audioSet.image,
+                color: colorTheme.accentColor,
+              ),
             )),
           ],
         ),

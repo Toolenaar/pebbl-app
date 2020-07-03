@@ -3,8 +3,10 @@ import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/presenter/soundscape_manager.dart';
+import 'package:pebbl/view/components/set_center_piece.dart';
 import 'package:provider/provider.dart';
 
+@deprecated
 class SoundscapeSlider extends StatefulWidget {
   const SoundscapeSlider({Key key}) : super(key: key);
 
@@ -23,8 +25,8 @@ class _SoundscapeSliderState extends State<SoundscapeSlider> {
   void initState() {
     _manager = context.read<SetsPresenter>().soundscapeManager;
     _manager.queueNextSet();
-    final initialPage = _manager.activeSet == null ? 0 : _manager.playQueue.indexOf(_manager.activeSet);
-    _controller = PageController(initialPage: initialPage);
+    // final initialPage = _manager.activeSet == null ? 0 : _manager.playQueue.indexOf(_manager.activeSet);
+    //  _controller = PageController(initialPage: initialPage);
 
     _manager.setStateListener(_onStateChanged);
 
@@ -70,7 +72,7 @@ class _SoundscapeSliderState extends State<SoundscapeSlider> {
           if (index == _manager.playQueue.length - 1) {
             _manager.queueNextSet();
           }
-          _manager.activeSet = _manager.playQueue[index];
+          //_manager.activeSet = _manager.playQueue[index];
           _manager.play();
           _jumpFromUserChange = true;
           setState(() {});
@@ -106,9 +108,9 @@ class SoundscapeSlide extends StatelessWidget {
               ),
             ),
           ),
-          Center(
-            child: Container(width: 128, height: 128, child: Image.network(audioSet.image)),
-          ),
+          SetCenterpiece(
+            audioSet: audioSet,
+          )
         ],
       ),
     );

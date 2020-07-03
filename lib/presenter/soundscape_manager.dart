@@ -3,21 +3,24 @@ import 'package:pebbl/model/audio_set.dart';
 import 'dart:math';
 
 import 'package:pebbl/presenter/sets_presenter.dart';
+import 'package:rxdart/rxdart.dart';
 
 class SoundscapeManager {
-  SoundscapeManager({@required this.audioSets, @required this.presenter}) {
-    activeSet = addSetToQueue(audioSets.first);
-  }
+  SoundscapeManager({@required this.presenter});
+
   final SetsPresenter presenter;
-  final List<AudioSet> audioSets;
   List<AudioSet> playQueue = [];
   final Random random = Random();
-  AudioSet activeSet;
+
+  final BehaviorSubject<AudioSet> activeSetSubject = BehaviorSubject.seeded(null);
+  ValueStream<AudioSet> get activeSetStream => activeSetSubject.stream;
+
+  int _activeIndex = 0;
 
   Function(String) _listener;
 
   void play() async {
-    presenter.setActiveSet(activeSet);
+    presenter.setActiveSet(activeSetSubject.value);
     presenter.playActiveSet();
   }
 
@@ -47,15 +50,41 @@ class SoundscapeManager {
     return newSet;
   }
 
+  void playNext({bool firstPlay = false}) {
+    //if last queue next track
+    // else just play next
+    if (!firstPlay) _activeIndex += 1;
+    if (_activeIndex == playQueue.length) {
+      queueNextSet();
+    }
+    activeSetSubject.add(playQueue[_activeIndex]);
+
+    play();
+  }
+
+  void playPrevious() {
+    _activeIndex -= 1;
+    if (_activeIndex == -1) return;
+    activeSetSubject.add(playQueue[_activeIndex]);
+    play();
+  }
+
   void queueNextSet() {
     // only one set active so we cant randomize
-    if (audioSets.length == 1) {
-      addSetToQueue(audioSets.first);
+    final sets = presenter.setsInCategory;
+    if (sets.length == 1) {
+      addSetToQueue(sets.first);
       return;
     }
     //get random set except the previous one
-    final potententials = audioSets.where((e) => e.id != activeSet.id).toList();
+    final potententials = sets.where((e) => e.id != activeSetSubject.value.id).toList();
     int randomNumber = random.nextInt(potententials.length);
     addSetToQueue(potententials[randomNumber]);
+  }
+
+  void dispose() {
+    removeStateListener();
+    _activeIndex = 0;
+    playQueue = [];
   }
 }

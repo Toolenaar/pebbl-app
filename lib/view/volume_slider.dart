@@ -12,7 +12,7 @@ class VolumeSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.getActiveColorTheme(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -25,16 +25,16 @@ class VolumeSlider extends StatelessWidget {
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: colorTheme.accentColor,
-            inactiveTrackColor:colorTheme.accentColor40,
+            inactiveTrackColor: colorTheme.accentColor40,
             trackShape: RectangularSliderTrackShape(),
             trackHeight: 1.0,
-            thumbColor:colorTheme.backgroundColor,
+            thumbColor: colorTheme.accentColor40,
             thumbShape: CustomThumbShape(),
             overlayColor: Colors.transparent,
-            overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
+            //overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
           ),
           child: Container(
-          //  color: Colors.red,
+            //  color: Colors.red,
             child: Slider(
                 min: 0,
                 max: 100,
@@ -101,6 +101,7 @@ class RotatedVolumeSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radians = degrees * pi / 180;
+    print(radians);
     return LayoutBuilder(
       builder: (ctx, constraints) {
         return Transform.rotate(

@@ -1,4 +1,5 @@
 import 'package:pebbl/logic/download_manager.dart';
+import 'package:pebbl/model/artist.dart';
 import 'package:pebbl/model/category.dart';
 import 'package:pebbl/model/stem.dart';
 
@@ -36,6 +37,7 @@ class AudioSet {
   Category category;
   final String name;
   final String id;
+  final Artist artist;
   final String fileName;
   final String image;
   DownloadedSet downloadedSet;
@@ -46,7 +48,16 @@ class AudioSet {
     return AudioSetStatus.unknown;
   }
 
-  AudioSet({this.stems, this.category, this.categoryId, this.name, this.fileName, this.id, this.image});
+  AudioSet(
+      {this.stems,
+      this.category,
+      this.categoryId,
+      this.artist,
+      this.name,
+      this.fileName,
+      this.id,
+      this.image,
+      this.downloadedSet});
 
   List<String> get downloadedStemPaths {
     return downloadedSet?.downloadedStems?.map((s) => s.filePath)?.toList() ?? null;
@@ -58,6 +69,7 @@ class AudioSet {
       fileName: data['fileName'],
       image: data['image'],
       name: data['name'],
+      artist: Artist.fromJson(data['artist']),
       categoryId: data['categoryId'],
       stems: List<Stem>.from(
         data['stems'].map(
@@ -76,8 +88,10 @@ class AudioSet {
     return AudioSet(
         category: category,
         id: id,
+        downloadedSet: downloadedSet?.copyWith() ?? null,
         fileName: fileName,
         image: image,
+        artist: artist.copyWith(),
         name: name,
         categoryId: categoryId,
         stems: stems);

@@ -5,16 +5,13 @@ import 'package:flutter/services.dart';
 class AudioPlugin {
   static const MethodChannel _channel = const MethodChannel('pebbl_plugin/audio');
   static const EventChannel _playbackEventchannel = const EventChannel('pebbl_plugin/playback');
-  bool _isInitialized = false;
 
   void initEventChannel(Function(Object) onEvent, Function(Object) onError) {
     _playbackEventchannel.receiveBroadcastStream().listen(onEvent, onError: onError);
   }
 
   Future<bool> initSet(String setName, List<String> paths) async {
-    if (_isInitialized) return true;
-    _isInitialized = await _channel.invokeMethod('initSet', {'name': setName, 'paths': paths});
-    return _isInitialized;
+    return await _channel.invokeMethod('initSet', {'name': setName, 'paths': paths});
   }
 
   Future<bool> playSet(String setName) async {

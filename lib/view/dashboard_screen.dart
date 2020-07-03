@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/model/audio_set.dart';
-import 'package:pebbl/model/category.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/components/bottom_bar.dart';
 
 import 'package:pebbl/view/components/sets/sets_list.dart';
-import 'package:pebbl/view/home/soundscape_slider.dart';
+import 'package:pebbl/view/home/audio_player.dart';
+
 import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -19,7 +19,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _activeIndex = -1;
-  CategoryColorTheme _colorTheme;
+
   @override
   void initState() {
     super.initState();
@@ -43,9 +43,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       //download set
       context.read<SetsPresenter>().downloadSet(audioSet);
     } else if (audioSet.status == AudioSetStatus.downloaded) {
-      //TODO start playing
       context.read<SetsPresenter>().setActiveSet(audioSet);
-       context.read<SetsPresenter>().setSoundscapeManager();
+      context.read<SetsPresenter>().setSoundscapeManager();
+
       setState(() {
         _activeIndex = -1;
       });
@@ -53,22 +53,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _viewForIndex() {
-    if (_activeIndex == -1) return SoundscapeSlider();
+    if (_activeIndex == -1) return AudioPlayer();
     if (_activeIndex == 0) return SetsList(onSetSelected: _newSetSelected);
     return const SizedBox();
   }
 
-  void _play() async {
-    context.read<SetsPresenter>().playActiveSet();
-  }
-
-  void _pause() async {
-    context.read<SetsPresenter>().stopActiveSet();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final isPlaying = context.select<SetsPresenter, bool>((value) => value.isPlaying);
     final isInitialized = context.select<SetsPresenter, bool>((value) => value.isInitialized);
     final colorTheme = AppColors.getActiveColorTheme(context);
     return Scaffold(
@@ -88,10 +79,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      RaisedButton(
-                        child: Text(isPlaying ? 'Pause Audio' : 'Play Audio'),
-                        onPressed: isPlaying ? _pause : _play,
-                      ),
                       RaisedButton(
                           child: Text('Sign-out'),
                           onPressed: () async {

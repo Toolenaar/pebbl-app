@@ -94,6 +94,6 @@ class ActiveSetBottomBarItem extends StatelessWidget {
     final colorTheme = AppColors.getActiveColorTheme(context);
     final color = isActive ? colorTheme.accentColor : colorTheme.accentColor40;
     final activeSet = context.select<SetsPresenter, AudioSet>((value) => value.activeSet);
-    return FittedBox(fit: BoxFit.fitWidth, child: BodyText2(activeSet.fullName, color: color));
+    return FittedBox(fit: BoxFit.fitWidth, child: BodyText2(activeSet?.fullName ?? 'P: Empty', color: color));
   }
 }

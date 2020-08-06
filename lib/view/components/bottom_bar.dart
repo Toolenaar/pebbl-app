@@ -36,7 +36,7 @@ class BottomBar extends StatelessWidget {
           flex: 1,
           child: BottomBarItem(
             child: TextBottomBarItem(
-              title: '00:00',
+              title: 'Favorites',
               isActive: activeIndex == 2,
             ),
             textAlignment: Alignment.centerRight,
@@ -52,8 +52,7 @@ class BottomBarItem extends StatelessWidget {
   final Function onTap;
   final AlignmentGeometry textAlignment;
   final Widget child;
-  const BottomBarItem(
-      {Key key, @required this.child, @required this.onTap, this.textAlignment = Alignment.center})
+  const BottomBarItem({Key key, @required this.child, @required this.onTap, this.textAlignment = Alignment.center})
       : super(key: key);
 
   @override

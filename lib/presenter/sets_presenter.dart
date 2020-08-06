@@ -3,31 +3,25 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/download_manager.dart';
-import 'package:pebbl/logic/local_storage.dart';
+import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/model/category.dart';
 import 'package:pebbl/model/services/audio_service.dart';
 import 'package:pebbl/model/services/category_service.dart';
-import 'package:pebbl/plugin/audio_plugin.dart';
-import 'package:pebbl/presenter/soundscape_manager.dart';
 
 class SetsPresenter with ChangeNotifier {
   static AudioService _service = AudioService();
   static CategoryService _categoryService = CategoryService();
-  static AudioPlugin _plugin = AudioPlugin();
-  static DownloadManager _downloadManager = DownloadManager();
+  // static DownloadManager _downloadManager = DownloadManager();
 
-  CategoryColorTheme get activeColorTheme => activeSet?.category?.colorTheme ?? AppColors.colorTheme;
-
-  SoundscapeManager soundscapeManager;
+  CategoryColorTheme activeColorTheme;
+  Category activeCategory;
   AudioSet activeSet;
   List<AudioSet> loadedSets;
   List<GroupedByCategory> setCategories = [];
   List<Category> _categories = [];
   StreamSubscription<List<AudioSet>> setsSubscription;
-  bool get isInitialized {
-    return _downloadManager.isInitialized && setCategories.length > 0;
-  }
+  bool isInitialized = false;
 
   List<AudioSet> get setsInCategory {
     if (activeSet == null) return [];
@@ -40,10 +34,11 @@ class SetsPresenter with ChangeNotifier {
 
   void init() async {
     if (isInitialized) return;
+    activeColorTheme = AppColors.colorTheme;
     _categories = await _categoryService.fetchCategories();
     fetchSets();
-    await _downloadManager.init();
-    _plugin.initEventChannel(_audioPlayerStateChanged, _audioPlayerStateError);
+    // await _downloadManager.init();
+
     notifyListeners();
   }
 
@@ -53,57 +48,15 @@ class SetsPresenter with ChangeNotifier {
     super.dispose();
   }
 
-  void _audioPlayerStateChanged(Object object) {
-    if (soundscapeManager != null) {
-      soundscapeManager.notifyPlayerStateChange(object);
-    }
-  }
-
-  void _audioPlayerStateError(Object object) {
-    print(object);
-  }
-
-  void setActiveSet(AudioSet audioSet) {
-    activeSet = audioSet;
+  void setActiveCategory(Category category) {
+    activeCategory = category;
+    activeColorTheme = category.colorTheme;
     notifyListeners();
   }
-
-  void setSoundscapeManager() {
-    if (soundscapeManager != null) {
-      soundscapeManager.dispose();
-    }
-    soundscapeManager = SoundscapeManager(presenter: this);
-    if (activeSet != null) {
-      soundscapeManager.addSetToQueue(activeSet);
-      soundscapeManager.playNext(firstPlay: true);
-    }
-  }
-
-  void changeStemVolume(String fileName, double volume) {
-    //get downloaded stem
-
-    _plugin.changeStemVolume(fileName, volume);
-  }
-
-  void playActiveSet() async {
-    var result = await _plugin.initSet(activeSet.fileName, activeSet.downloadedStemPaths);
-    if (result) {
-      isPlaying = await _plugin.playSet(activeSet.fileName);
-    } else {
-      print('Error initializing set');
-    }
-    notifyListeners();
-  }
-
-  void stopActiveSet() async {
-    isPlaying = !await _plugin.pauseSet(activeSet.fileName);
-    notifyListeners();
-  }
-
-  Future _loadDownloadedSets() async {
-    await _downloadManager.loadDownloadedSets(loadedSets);
-    notifyListeners();
-  }
+  // Future _loadDownloadedSets() async {
+  //   await _downloadManager.loadDownloadedSets(loadedSets);
+  //   notifyListeners();
+  // }
 
   fetchSets() {
     setsSubscription = _service.fetchSetsStream().listen((sets) async {
@@ -112,10 +65,9 @@ class SetsPresenter with ChangeNotifier {
       _attachCategory();
       //categories grouped
       setCategories = GroupedByCategory.fromAudioSetList(sets);
-      if (soundscapeManager == null) {
-        setSoundscapeManager();
-      }
-      await _loadDownloadedSets();
+      isInitialized = setCategories.length > 0;
+      notifyListeners();
+      //await _loadDownloadedSets();
     });
   }
 
@@ -128,27 +80,27 @@ class SetsPresenter with ChangeNotifier {
     }
   }
 
-  Future downloadSet(AudioSet audioSet) async {
-    try {
-      AudioSetDownloadTask task = await _downloadManager.downloadSet(audioSet);
-      StreamSubscription<double> downloadSub;
+  // Future downloadSet(AudioSet audioSet) async {
+  //   try {
+  //     AudioSetDownloadTask task = await _downloadManager.downloadSet(audioSet);
+  //     StreamSubscription<double> downloadSub;
 
-      task.onComplete = () async {
-        audioSet.downloadedSet = DownloadedSet.fromJsonString(await LocalStorage.getString(audioSet.id));
-        currentDownloadProgress[audioSet.id] = null;
-        currentDownloadProgress = Map.from(currentDownloadProgress); //create a new to trigger listeners
-        downloadSub.cancel();
-        notifyListeners();
-      };
+  //     task.onComplete = () async {
+  //       audioSet.downloadedSet = DownloadedSet.fromJsonString(await LocalStorage.getString(audioSet.id));
+  //       currentDownloadProgress[audioSet.id] = null;
+  //       currentDownloadProgress = Map.from(currentDownloadProgress); //create a new to trigger listeners
+  //       downloadSub.cancel();
+  //       notifyListeners();
+  //     };
 
-      downloadSub = task.downloadProgressStream.listen((event) {
-        currentDownloadProgress[audioSet.id] = event;
-        currentDownloadProgress = Map.from(currentDownloadProgress); //create a new to trigger listeners
-        notifyListeners();
-      });
-      //remove the download task
-    } catch (e) {
-      print(e);
-    }
-  }
+  //     downloadSub = task.downloadProgressStream.listen((event) {
+  //       currentDownloadProgress[audioSet.id] = event;
+  //       currentDownloadProgress = Map.from(currentDownloadProgress); //create a new to trigger listeners
+  //       notifyListeners();
+  //     });
+  //     //remove the download task
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 }

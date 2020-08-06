@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pebbl/logic/exensions/string.dart';
+import 'package:pebbl/logic/extensions/string.dart';
 
 class CategoryColorTheme {
   final Color accentColor;

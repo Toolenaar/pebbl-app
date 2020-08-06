@@ -8,4 +8,8 @@ class Artist {
   Artist copyWith() {
     return Artist(name: name);
   }
+
+  Map<String, dynamic> toJson() {
+    return {'name': name};
+  }
 }

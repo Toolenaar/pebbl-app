@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pebbl/model/audio_set.dart';
+import 'package:pebbl/model/services/audio_service.dart';
 import 'package:pebbl/model/services/firebase_service.dart';
 import 'package:pebbl/model/services/user_service.dart';
 import 'package:pebbl/model/user.dart';
@@ -71,5 +73,26 @@ class UserPresenter {
     isInitialized.add(null);
     await _auth.signOut();
     initialize();
+  }
+
+  void addFavorite(AudioSet audioSet) {
+    _service.addFavorite(userId: user.id, audioSet: audioSet);
+  }
+
+  void removeFavorite(AudioSet audioSet) {
+    _service.removeFavorite(userId: user.id, audioSetId: audioSet.id);
+  }
+
+  Stream isFavoriteStream(AudioSet audioSet) {
+    return _service.isFavoriteStream(userId: user.id, audioSet: audioSet);
+  }
+
+  Stream<List<AudioSet>> favoritesStream() {
+    final stream = _service.favoritesStream(userId: user.id);
+    return stream.map<List<AudioSet>>((s) => parseFavos(s));
+  }
+
+  List<AudioSet> parseFavos(List<FirebaseResult> docs) {
+    return List<AudioSet>.from(docs.map((d) => AudioSet.fromJson(d.data, d.id)));
   }
 }

@@ -17,7 +17,6 @@ class AppColors {
       highlightColor: Color(0xFF3E5342));
 
   static CategoryColorTheme getActiveColorTheme(BuildContext context) {
-    final activeSet = context.select<SetsPresenter, AudioSet>((value) => value.activeSet);
-    return activeSet?.category?.colorTheme ?? AppColors.colorTheme;
+    return context.select<SetsPresenter, CategoryColorTheme>((value) => value.activeColorTheme);
   }
 }

@@ -1,4 +1,3 @@
-import 'package:pebbl/logic/download_manager.dart';
 import 'package:pebbl/model/artist.dart';
 import 'package:pebbl/model/category.dart';
 import 'package:pebbl/model/stem.dart';
@@ -29,7 +28,7 @@ class GroupedByCategory {
   }
 }
 
-enum AudioSetStatus { notDownloaded, locked, downloaded, owned, unknown }
+enum AudioSetStatus { notDownloaded, locked, downloaded, owned, unknown, streaming }
 
 class AudioSet {
   final List<Stem> stems;
@@ -40,28 +39,31 @@ class AudioSet {
   final Artist artist;
   final String fileName;
   final String image;
-  DownloadedSet downloadedSet;
+  final String trackUrl;
+  String playbackUrl;
+  // DownloadedSet downloadedSet;
 
   AudioSetStatus get status {
-    if (downloadedSet == null || !downloadedSet.isFullyDownloaded) return AudioSetStatus.notDownloaded;
-    if (downloadedSet.isFullyDownloaded) return AudioSetStatus.downloaded;
-    return AudioSetStatus.unknown;
+    // if (downloadedSet == null || !downloadedSet.isFullyDownloaded) return AudioSetStatus.notDownloaded;
+    // if (downloadedSet.isFullyDownloaded) return AudioSetStatus.downloaded;
+    return AudioSetStatus.streaming;
   }
 
   AudioSet(
       {this.stems,
       this.category,
+      this.trackUrl,
       this.categoryId,
       this.artist,
+      this.playbackUrl,
       this.name,
       this.fileName,
       this.id,
-      this.image,
-      this.downloadedSet});
+      this.image});
 
-  List<String> get downloadedStemPaths {
-    return downloadedSet?.downloadedStems?.map((s) => s.filePath)?.toList() ?? null;
-  }
+  // List<String> get downloadedStemPaths {
+  //   return downloadedSet?.downloadedStems?.map((s) => s.filePath)?.toList() ?? null;
+  // }
 
   static AudioSet fromJson(Map data, String id) {
     return AudioSet(
@@ -69,14 +71,28 @@ class AudioSet {
       fileName: data['fileName'],
       image: data['image'],
       name: data['name'],
+      trackUrl: data['trackUrl'],
       artist: Artist.fromJson(data['artist']),
       categoryId: data['categoryId'],
-      stems: List<Stem>.from(
-        data['stems'].map(
-          (s) => Stem.fromJson(s),
-        ),
-      ),
+      stems: data['stems'] == null
+          ? null
+          : List<Stem>.from(
+              data['stems'].map(
+                (s) => Stem.fromJson(s),
+              ),
+            ),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'fileName': fileName,
+      'image': image,
+      'categoryId': categoryId,
+      'name': name,
+      'artist': artist.toJson(),
+      'trackUrl': trackUrl
+    };
   }
 
   String get fullName {
@@ -88,9 +104,11 @@ class AudioSet {
     return AudioSet(
         category: category,
         id: id,
-        downloadedSet: downloadedSet?.copyWith() ?? null,
+        // downloadedSet: downloadedSet?.copyWith() ?? null,
         fileName: fileName,
+        trackUrl: trackUrl,
         image: image,
+        playbackUrl: this.playbackUrl,
         artist: artist.copyWith(),
         name: name,
         categoryId: categoryId,

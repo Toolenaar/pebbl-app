@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "408145611803",
+    "firebase_url": "https://pebbl-dc758.firebaseio.com",
+    "project_id": "pebbl-dc758",
+    "storage_bucket": "pebbl-dc758.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:408145611803:android:5a9c1773ffc8b9ac977cbe",
+        "android_client_info": {
+          "package_name": "df.pebbl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "408145611803-h30dtf3s4f7bf0kc9v6jpjikn2npta5l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF1tr-s6MzyOaMBU3lrwB378kFx04h4PM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "408145611803-h30dtf3s4f7bf0kc9v6jpjikn2npta5l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "408145611803-r87btj4ak0es531a197dg67sce7mcgoh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "df.pebbl"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

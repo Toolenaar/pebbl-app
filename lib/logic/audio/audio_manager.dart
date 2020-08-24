@@ -3,11 +3,8 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:rxdart/rxdart.dart';
-
-import '../../main.dart';
 
 class AudioManager {
   AudioManager() {

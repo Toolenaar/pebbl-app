@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
+import 'package:pebbl/logic/date_helper.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/audio_set.dart';
+import 'package:pebbl/model/timer_data.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
+import 'package:pebbl/presenter/timer_presenter.dart';
+import 'package:pebbl/view/home/timer/countdown_timer.dart';
 import 'package:provider/provider.dart';
 
 class BottomBar extends StatelessWidget {
@@ -25,8 +29,8 @@ class BottomBar extends StatelessWidget {
         Expanded(
           flex: 1,
           child: BottomBarItem(
-            child: TextBottomBarItem(
-              title: 'Infinite',
+            child: TimerBottomBarItem(
+              title: 'Timer',
               isActive: activeIndex == 1,
             ),
             onTap: () => onTabChanged(1),
@@ -67,6 +71,48 @@ class BottomBarItem extends StatelessWidget {
           child: child,
         ),
       ),
+    );
+  }
+}
+
+class TimerBottomBarItem extends StatefulWidget {
+  final String title;
+  final bool isActive;
+  const TimerBottomBarItem({Key key, this.isActive = false, this.title}) : super(key: key);
+
+  @override
+  _TimerBottomBarItemState createState() => _TimerBottomBarItemState();
+}
+
+class _TimerBottomBarItemState extends State<TimerBottomBarItem> {
+  TimerPresenter _presenter;
+
+  @override
+  void initState() {
+    _presenter = context.read<TimerPresenter>();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColors.getActiveColorTheme(context);
+    final color = widget.isActive ? colorTheme.accentColor : colorTheme.accentColor40;
+
+    return StreamBuilder<TimerData>(
+      stream: _presenter.activeTimerStream,
+      initialData: null,
+      builder: (BuildContext context, AsyncSnapshot<TimerData> snapshot) {
+        if (snapshot.data == null) return BodyText2(widget.title, color: color);
+        if (snapshot.data.endTime == null)
+          return BodyText2(DateHelper.secondsToHoursMinutesSeconds(snapshot.data.workTime * 60), color: color);
+
+        return CountdownTimerView(
+          initialDisplay: DateHelper.secondsToHoursMinutesSeconds(snapshot.data.workTime * 60),
+          dateTime: snapshot.data.endTime,
+          fontSize: 14,
+          color: color,
+        );
+      },
     );
   }
 }

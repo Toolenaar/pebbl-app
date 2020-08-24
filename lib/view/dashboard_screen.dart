@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/audio/audio_controller.dart';
 import 'package:pebbl/logic/colors.dart';
+import 'package:pebbl/logic/local_notification_helper.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
+import 'package:pebbl/presenter/timer_presenter.dart';
 import 'package:pebbl/view/components/bottom_bar.dart';
 import 'package:pebbl/view/components/sets/sets_list.dart';
 import 'package:pebbl/view/home/audio_test.dart';
 import 'package:pebbl/view/home/favorites/favorites_page.dart';
+import 'package:pebbl/view/home/timer/timer_view.dart';
 import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -22,12 +25,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<LocalNotificationHelper>().initLocalNotifications(context);
     context.read<SetsPresenter>().init();
+    context.read<TimerPresenter>().loadTimer();
   }
 
   @override
   void dispose() {
     context.read<AudioController>().dispose();
+
     super.dispose();
   }
 
@@ -51,21 +57,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _viewForIndex() {
-    if (_activeIndex == -1) {
-      return AudioTest();
+    // if (_activeIndex == -1) {
+    //   return Positioned.fill(child: AudioTest());
+    // }
+    if (_activeIndex == 1) {
+      return Positioned(bottom: 0, left: 0, right: 0, child: TimerView());
     }
     if (_activeIndex == 0) {
-      return SetsList(
-        onCategorySelected: _newCategorySelected,
-        close: () {
-          setState(() {
-            _activeIndex = -1;
-          });
-        },
+      return Positioned.fill(
+        child: SetsList(
+          onCategorySelected: _newCategorySelected,
+          close: () {
+            setState(() {
+              _activeIndex = -1;
+            });
+          },
+        ),
       );
     }
     if (_activeIndex == 2) {
-      return FavoritesPage();
+      return Positioned.fill(child: FavoritesPage());
     }
     return const SizedBox();
   }
@@ -83,10 +94,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 children: <Widget>[
                   Expanded(
-                    child: Container(
-                      child: Center(
-                        child: _viewForIndex(),
-                      ),
+                    child: Stack(
+                      children: [
+                        Positioned.fill(child: AudioTest()),
+                        _viewForIndex(),
+                      ],
                     ),
                   ),
                   // Row(

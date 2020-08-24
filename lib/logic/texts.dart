@@ -40,7 +40,8 @@ class BodyText1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: Theme.of(context).textTheme.bodyText1.copyWith(color: color, fontSize: fontSize),
+      style:
+          Theme.of(context).textTheme.bodyText1.copyWith(color: color, fontSize: fontSize, fontWeight: FontWeight.bold),
     );
   }
 }

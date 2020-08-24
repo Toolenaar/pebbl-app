@@ -6,8 +6,7 @@ class ThemedPebbleButton extends StatelessWidget {
   final String title;
   final Function onTap;
   final CategoryColorTheme categoryTheme;
-  const ThemedPebbleButton({Key key, @required this.title, this.onTap, @required this.categoryTheme})
-      : super(key: key);
+  const ThemedPebbleButton({Key key, @required this.title, this.onTap, @required this.categoryTheme}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +16,7 @@ class ThemedPebbleButton extends StatelessWidget {
       backgroundColor: categoryTheme.backgroundColor,
       color: categoryTheme.accentColor,
       splashColor: categoryTheme.selectionColor,
-      highlightColor: categoryTheme.selectionColor,
+      highlightColor: categoryTheme.highlightColor,
     );
   }
 }

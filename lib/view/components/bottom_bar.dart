@@ -107,8 +107,6 @@ class _TimerBottomBarItemState extends State<TimerBottomBarItem> {
           return BodyText2(DateHelper.secondsToHoursMinutesSeconds(snapshot.data.workTime * 60), color: color);
 
         return CountdownTimerView(
-          initialDisplay: DateHelper.secondsToHoursMinutesSeconds(snapshot.data.workTime * 60),
-          dateTime: snapshot.data.endTime,
           fontSize: 14,
           color: color,
         );

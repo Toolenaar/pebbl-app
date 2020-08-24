@@ -5,6 +5,7 @@ import 'package:pebbl/logic/local_notification_helper.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/presenter/timer_presenter.dart';
+import 'package:pebbl/view/components/animation_view.dart';
 import 'package:pebbl/view/components/bottom_bar.dart';
 import 'package:pebbl/view/components/sets/sets_list.dart';
 import 'package:pebbl/view/home/audio_test.dart';
@@ -21,13 +22,15 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _activeIndex = -1;
+  SetsPresenter _setsPresenter;
 
   @override
   void initState() {
     super.initState();
     context.read<LocalNotificationHelper>().initLocalNotifications(context);
-    context.read<SetsPresenter>().init();
-    context.read<TimerPresenter>().loadTimer();
+    _setsPresenter = context.read<SetsPresenter>();
+    _setsPresenter.init();
+    context.read<TimerPresenter>().init();
   }
 
   @override
@@ -57,9 +60,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _viewForIndex() {
-    // if (_activeIndex == -1) {
-    //   return Positioned.fill(child: AudioTest());
-    // }
+    if (_activeIndex == -1) {
+      return Positioned.fill(child: AudioTest());
+    }
     if (_activeIndex == 1) {
       return Positioned(bottom: 0, left: 0, right: 0, child: TimerView());
     }
@@ -78,14 +81,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (_activeIndex == 2) {
       return Positioned.fill(child: FavoritesPage());
     }
-    return const SizedBox();
+    return SizedBox();
   }
 
   @override
   Widget build(BuildContext context) {
     final isInitialized = context.select<SetsPresenter, bool>((value) => value.isInitialized);
     final colorTheme = AppColors.getActiveColorTheme(context);
-
+    final activeView = _viewForIndex();
     return Scaffold(
       backgroundColor: colorTheme.backgroundColor,
       body: !isInitialized
@@ -96,8 +99,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Expanded(
                     child: Stack(
                       children: [
-                        Positioned.fill(child: AudioTest()),
-                        _viewForIndex(),
+                        if (_setsPresenter.activeCategory != null)
+                          AnimationView(
+                            animationFile: _setsPresenter.activeCategory.animationFileName,
+                          ),
+                        activeView
                       ],
                     ),
                   ),

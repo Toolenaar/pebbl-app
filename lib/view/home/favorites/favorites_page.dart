@@ -74,8 +74,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
             ),
           );
         }
-        return Padding(
-          padding: const EdgeInsets.all(24),
+        return Container(
+          color: colorTheme.backgroundColor,
+          padding: const EdgeInsets.only(top: 16),
           child: Column(
             children: <Widget>[
               Expanded(

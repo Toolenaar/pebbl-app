@@ -1,19 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:pebbl/logic/date_helper.dart';
+import 'package:provider/provider.dart';
 import 'package:pebbl/logic/texts.dart';
+import 'package:pebbl/presenter/timer_presenter.dart';
 
 class CountdownTimerView extends StatefulWidget {
-  final DateTime dateTime;
   final double fontSize;
-  final String initialDisplay;
   final Color color;
+  final String time;
   const CountdownTimerView({
     Key key,
-    this.dateTime,
-    this.initialDisplay,
+    this.time,
     this.fontSize = 32,
     this.color,
   }) : super(key: key);
@@ -22,63 +20,33 @@ class CountdownTimerView extends StatefulWidget {
 }
 
 class _TimerViewState extends State<CountdownTimerView> {
-  var timerCountDown = '00:00:00';
-  Color colors = Colors.red;
-  DateTime dateCheck;
-  Timer timer;
-  DateTime dateTimeStart;
+  Stream<String> countdownTimeStream;
 
   @override
   void initState() {
-    timerCountDown = widget.initialDisplay ?? '00:00:00';
-    if (widget.dateTime == null) {
-      dateTimeStart = DateTime.now();
-    } else {
-      dateTimeStart = widget.dateTime;
-    }
-    if (widget.color != null) {
-      colors = widget.color;
-    }
-    dateCheck = DateFormat('yyyy-MM-dd HH:mm:ss').parse(dateTimeStart.toString());
-
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setJustTime();
-    });
-    setJustTime(setTheState: false);
+    countdownTimeStream = context.read<TimerPresenter>().timeDisplayStream;
     super.initState();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void setJustTime({bool setTheState = true}) {
-    final seconds = dateCheck.difference(DateTime.now()).inSeconds;
-    if (!mounted) return;
-
-    if (widget.dateTime.isBefore(DateTime.now())) {
-      timerCountDown = '00:00:00';
-    } else {
-      timerCountDown = DateHelper.secondsToHoursMinutesSeconds(seconds);
-    }
-    if (setTheState) {
-      setState(() {});
-    }
+  Widget _buildText(String time) {
+    return BodyText2(
+      time,
+      color: widget.color,
+      fontSize: widget.fontSize,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          BodyText2(
-            timerCountDown,
-            color: widget.color,
-            fontSize: widget.fontSize,
-          ),
-        ],
-      ),
+    if (widget.time != null) {
+      _buildText(widget.time);
+    }
+    return StreamBuilder<String>(
+      stream: countdownTimeStream,
+      initialData: '',
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        return _buildText(snapshot.data);
+      },
     );
   }
 }

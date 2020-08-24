@@ -42,10 +42,10 @@ class _PlayerArtState extends State<PlayerArt> {
           width: 128,
           child: Stack(
             children: <Widget>[
-              Image.network(
-                audioSet.image,
-                color: colorTheme.accentColor,
-              ),
+              // Image.network(
+              //   audioSet.image,
+              //   color: colorTheme.accentColor,
+              // ),
               Center(
                 child: PlayPauseButton(
                     color: colorTheme.accentColor,

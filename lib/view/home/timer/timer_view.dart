@@ -40,7 +40,9 @@ class _TimerViewState extends State<TimerView> {
 
   @override
   Widget build(BuildContext context) {
+    final colorTheme = AppColors.getActiveColorTheme(context);
     return Container(
+      color: colorTheme.backgroundColor,
       padding: const EdgeInsets.all(24),
       child: _timerData != null
           ? ActiveTimerView(
@@ -126,8 +128,8 @@ class TimerSetupView extends StatelessWidget {
               timePicked: timePicked),
         if (mode == 'pomodoro')
           PomodoroTimerSelector(
-            workMinutes: [Minute(5), Minute(10), Minute(30), Minute(60)],
-            breakMinutes: [Minute(5), Minute(10), Minute(15), Minute(20)],
+            workMinutes: [Minute(1), Minute(5), Minute(10), Minute(30), Minute(60)],
+            breakMinutes: [Minute(1), Minute(5), Minute(10), Minute(15), Minute(20)],
             breakTimePicked: breakTimePicked,
             workTimePicked: workTimePicked,
             initialBreakTimeValue: initialBreakTimeValue,

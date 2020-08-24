@@ -42,6 +42,7 @@ dependencies:
   audio_service: ^0.11.2
   intl: ^0.16.1
   flutter_local_notifications: ^1.4.4+4
+  lottie: ^0.6.0
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,8 @@ flutter:
     - assets/img/ic_active_indicator.png
     - assets/img/ic_favo_filled.png
     - assets/img/ic_favo_outline.png
+    - assets/animations/sleep_data.json
+    - assets/animations/study_data.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -35,6 +35,7 @@ class AudioSet {
   final String categoryId;
   Category category;
   final String name;
+  final int duration; // in seconds
   final String id;
   final Artist artist;
   final String fileName;
@@ -55,6 +56,7 @@ class AudioSet {
       this.trackUrl,
       this.categoryId,
       this.artist,
+      this.duration,
       this.playbackUrl,
       this.name,
       this.fileName,
@@ -71,6 +73,7 @@ class AudioSet {
       fileName: data['fileName'],
       image: data['image'],
       name: data['name'],
+      duration: data['duration'],
       trackUrl: data['trackUrl'],
       artist: Artist.fromJson(data['artist']),
       categoryId: data['categoryId'],
@@ -90,6 +93,7 @@ class AudioSet {
       'image': image,
       'categoryId': categoryId,
       'name': name,
+      'duration': duration,
       'artist': artist.toJson(),
       'trackUrl': trackUrl
     };
@@ -107,6 +111,7 @@ class AudioSet {
         // downloadedSet: downloadedSet?.copyWith() ?? null,
         fileName: fileName,
         trackUrl: trackUrl,
+        duration: duration,
         image: image,
         playbackUrl: this.playbackUrl,
         artist: artist.copyWith(),

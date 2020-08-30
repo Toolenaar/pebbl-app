@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pebbl/logic/audio/audio_controller.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/audio_set.dart';
@@ -17,10 +18,17 @@ class FavoritesPage extends StatefulWidget {
 
 class _FavoritesPageState extends State<FavoritesPage> {
   Stream _favoritesStream;
+  List<AudioSet> _favos;
   @override
   void initState() {
     _favoritesStream = context.read<UserPresenter>().favoritesStream();
     super.initState();
+  }
+
+  void _startFavoPlaylist() {
+    if (_favos != null && _favos.length != 0) {
+      context.read<AudioController>().shuffleStartPlaylist(_favos, startPlaying: true);
+    }
   }
 
   Widget _buildList(List<AudioSet> favos, CategoryColorTheme colorTheme) {
@@ -43,7 +51,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
             return TrackListItem(
               isInFavoriteList: true,
               audioSet: item,
-              onTap: () {},
+              onTap: () {
+                context.read<AudioController>().startPlaylistAtIndex(_favos, index - 1);
+              },
             );
           }),
     );
@@ -53,7 +63,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return ThemedPebbleButton(
       title: 'Shuffle favorites',
       categoryTheme: colorTheme,
-      onTap: () {},
+      onTap: _startFavoPlaylist,
     );
   }
 
@@ -67,13 +77,14 @@ class _FavoritesPageState extends State<FavoritesPage> {
         if (snapshot.data == null) {
           return Container(
             child: Center(
-              child: BodyText1(
+              child: BodyText2(
                 'No favorites yet',
-                color: Colors.white,
+                color: colorTheme.accentColor40,
               ),
             ),
           );
         }
+        _favos = snapshot.data;
         return Container(
           color: colorTheme.backgroundColor,
           padding: const EdgeInsets.only(top: 16),

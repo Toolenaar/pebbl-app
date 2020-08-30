@@ -25,8 +25,9 @@ class _AudioPlayerState extends State<AudioPlayerView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.audioSet == null) return Container();
     final colorTheme = AppColors.getActiveColorTheme(context);
+    if (widget.audioSet == null) return Container();
+
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -144,10 +145,14 @@ class _ToggleFavoriteButtonState extends State<ToggleFavoriteButton> {
         final icon = _isFavorite ? 'assets/img/ic_favo_filled.png' : 'assets/img/ic_favo_outline.png';
         return GestureDetector(
           onTap: _onPressed,
-          child: ImageIcon(
-            AssetImage(icon),
-            color: widget.color,
-            size: widget.iconSize,
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            color: Colors.transparent,
+            child: ImageIcon(
+              AssetImage(icon),
+              color: widget.color,
+              size: widget.iconSize,
+            ),
           ),
         );
       },

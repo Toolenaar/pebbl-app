@@ -17,7 +17,7 @@ class TimerData {
   }
 
   Map<String, dynamic> toJson() {
-    return {'mode': mode, 'workTime': workTime, 'breakTime': workTime, 'endTime': endTime.toIso8601String()};
+    return {'mode': mode, 'workTime': workTime, 'breakTime': workTime, 'endTime': endTime?.toIso8601String() ?? null};
   }
 
   static TimerData fromJson(Map<String, dynamic> json) {

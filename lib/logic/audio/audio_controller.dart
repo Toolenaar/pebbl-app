@@ -7,10 +7,6 @@ import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:rxdart/rxdart.dart';
 
-void _audioPlayerTaskEntrypoint() async {
-  AudioServiceBackground.run(() => AudioPlayerTask());
-}
-
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
   label: 'Play',
@@ -37,6 +33,9 @@ MediaControl stopControl = MediaControl(
   action: MediaAction.stop,
 );
 //List<MediaItem> queue;
+void _audioPlayerTaskEntrypoint() async {
+  AudioServiceBackground.run(() => AudioPlayerTask());
+}
 
 class ScreenState {
   final List<MediaItem> queue;
@@ -75,6 +74,10 @@ class AudioController {
   }
 
   void dispose() {}
+  void startPlaylistAtIndex(List<AudioSet> sets, int index) {
+    _currentPlaylist = sets;
+    _startPlaylist(index: index);
+  }
 
   void shuffleStartPlaylist(List<AudioSet> sets, {bool startPlaying}) {
     final copy = sets.map((s) => s.copyWith()).toList();
@@ -88,13 +91,19 @@ class AudioController {
     for (AudioSet item in _currentPlaylist) {
       final url = await StorageHelper.getDownloadUrl(item.trackUrl, storage);
       item.playbackUrl = url;
-      newQueue.add(MediaItem(id: url, title: item.name, artist: item.artist.name, album: item.category.name).toJson());
+      newQueue.add(MediaItem(
+              id: url,
+              title: item.name,
+              artist: item.artist.name,
+              album: item.category.name,
+              duration: Duration(seconds: item.duration))
+          .toJson());
     }
 
     return newQueue.toList();
   }
 
-  void _startPlaylist() async {
+  void _startPlaylist({int index}) async {
     await AudioService.stop();
 
     final trackQueue = await _playlistToMediaItems();
@@ -107,8 +116,13 @@ class AudioController {
       androidNotificationColor: 0xFF2196f3,
       androidNotificationIcon: 'mipmap/ic_launcher',
       androidEnableQueue: true,
+
       params: {'queue': trackQueue},
     );
+    if (index != null) {
+      final mediaId = trackQueue[index]['id'];
+      AudioService.skipToQueueItem(mediaId);
+    }
     // AudioService.play();
     //AudioService.addQueueItems(trackQueue);
   }
@@ -357,7 +371,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
     await AudioServiceBackground.setState(
       controls: getControls(),
-      systemActions: [MediaAction.seekTo],
+      systemActions: [
+        MediaAction.skipToNext,
+        MediaAction.skipToPrevious,
+        MediaAction.pause,
+        MediaAction.pause,
+        MediaAction.seekTo
+      ],
       processingState: processingState ?? AudioServiceBackground.state.processingState,
       playing: _playing,
       position: position,

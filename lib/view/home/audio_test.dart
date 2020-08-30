@@ -3,17 +3,19 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/audio/audio_controller.dart';
+import 'package:pebbl/logic/colors.dart';
+import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/view/home/audio/audio_player_view.dart';
 import 'package:provider/provider.dart';
 
-class AudioTest extends StatefulWidget {
-  const AudioTest({Key key}) : super(key: key);
+class AudioView extends StatefulWidget {
+  const AudioView({Key key}) : super(key: key);
 
   @override
-  _AudioTestState createState() => _AudioTestState();
+  _AudioViewState createState() => _AudioViewState();
 }
 
-class _AudioTestState extends State<AudioTest> {
+class _AudioViewState extends State<AudioView> {
   AudioController audioController;
 
   @override
@@ -34,8 +36,16 @@ class _AudioTestState extends State<AudioTest> {
         final processingState = state?.processingState ?? AudioProcessingState.none;
         print(processingState);
         print(mediaItem);
+        final colorTheme = AppColors.getActiveColorTheme(context);
         if (processingState == AudioProcessingState.none) {
-          return Container();
+          return Container(
+            child: Center(
+              child: BodyText2(
+                'Select a playlist to begin!',
+                color: colorTheme.accentColor40,
+              ),
+            ),
+          );
         }
         return Container(
           child: AudioPlayerView(

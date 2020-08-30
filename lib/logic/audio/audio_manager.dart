@@ -6,6 +6,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:rxdart/rxdart.dart';
 
+@deprecated
 class AudioManager {
   AudioManager() {
     AudioPlayer.setIosCategory(IosCategory.playback);

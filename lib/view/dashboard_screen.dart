@@ -61,7 +61,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _viewForIndex() {
     if (_activeIndex == -1) {
-      return Positioned.fill(child: AudioTest());
+      return Positioned.fill(child: AudioView());
     }
     if (_activeIndex == 1) {
       return Positioned(bottom: 0, left: 0, right: 0, child: TimerView());

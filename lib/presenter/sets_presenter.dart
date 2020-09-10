@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
-import 'package:pebbl/logic/download_manager.dart';
-import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/model/category.dart';
 import 'package:pebbl/model/services/audio_service.dart';
@@ -16,17 +14,12 @@ class SetsPresenter with ChangeNotifier {
 
   CategoryColorTheme activeColorTheme;
   Category activeCategory;
-  AudioSet activeSet;
+
   List<AudioSet> loadedSets;
   List<GroupedByCategory> setCategories = [];
   List<Category> _categories = [];
   StreamSubscription<List<AudioSet>> setsSubscription;
   bool isInitialized = false;
-
-  List<AudioSet> get setsInCategory {
-    if (activeSet == null) return [];
-    return loadedSets.where((e) => e.categoryId == activeSet.categoryId).toList();
-  }
 
   Map<String, double> currentDownloadProgress = {};
 
@@ -62,7 +55,7 @@ class SetsPresenter with ChangeNotifier {
     setsSubscription = _service.fetchSetsStream().listen((sets) async {
       loadedSets = sets;
       //for each set pair a category
-      _attachCategory();
+      attachCategory(loadedSets);
       //categories grouped
       setCategories = GroupedByCategory.fromAudioSetList(sets);
       isInitialized = setCategories.length > 0;
@@ -71,8 +64,8 @@ class SetsPresenter with ChangeNotifier {
     });
   }
 
-  void _attachCategory() {
-    for (var audioSet in loadedSets) {
+  attachCategory(List<AudioSet> sets) {
+    for (var audioSet in sets) {
       final cat = _categories.where((c) => c.id == audioSet.categoryId);
       if (cat.isNotEmpty) {
         audioSet.category = cat.first;

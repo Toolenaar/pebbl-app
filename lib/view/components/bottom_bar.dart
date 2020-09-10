@@ -3,6 +3,7 @@ import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/date_helper.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/audio_set.dart';
+import 'package:pebbl/model/category.dart';
 import 'package:pebbl/model/timer_data.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/presenter/timer_presenter.dart';
@@ -136,7 +137,7 @@ class ActiveSetBottomBarItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorTheme = AppColors.getActiveColorTheme(context);
     final color = isActive ? colorTheme.accentColor : colorTheme.accentColor40;
-    final activeSet = context.select<SetsPresenter, AudioSet>((value) => value.activeSet);
-    return FittedBox(fit: BoxFit.fitWidth, child: BodyText2(activeSet?.fullName ?? 'P: Empty', color: color));
+    final activeCat = context.select<SetsPresenter, Category>((value) => value.activeCategory);
+    return FittedBox(fit: BoxFit.fitWidth, child: BodyText2(activeCat?.name ?? 'P: Empty', color: color));
   }
 }

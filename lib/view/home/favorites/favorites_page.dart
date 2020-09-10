@@ -4,6 +4,7 @@ import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/model/category.dart';
+import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/components/buttons/pebble_button.dart';
 import 'package:pebbl/view/components/sets/tracks_list.dart';
@@ -19,8 +20,10 @@ class FavoritesPage extends StatefulWidget {
 class _FavoritesPageState extends State<FavoritesPage> {
   Stream _favoritesStream;
   List<AudioSet> _favos;
+  SetsPresenter _setsPresenter;
   @override
   void initState() {
+    _setsPresenter = context.read<SetsPresenter>();
     _favoritesStream = context.read<UserPresenter>().favoritesStream();
     super.initState();
   }
@@ -85,9 +88,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
           );
         }
         _favos = snapshot.data;
+        _setsPresenter.attachCategory(_favos);
+
         return Container(
           color: colorTheme.backgroundColor,
-          padding: const EdgeInsets.only(top: 16),
+          padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
           child: Column(
             children: <Widget>[
               Expanded(

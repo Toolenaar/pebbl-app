@@ -72,33 +72,30 @@ class TrackInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                H1Text(
-                  audioSet.name,
-                  fontSize: 20,
-                  color: audioSet.category.colorTheme.accentColor,
-                ),
-                BodyText1(
-                  audioSet.artist.name,
-                  color: audioSet.category.colorTheme.accentColor,
-                ),
-              ],
-            ),
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              H1Text(
+                audioSet.name,
+                fontSize: 20,
+                color: audioSet.category.colorTheme.accentColor,
+              ),
+              BodyText1(
+                audioSet.artist.name,
+                color: audioSet.category.colorTheme.accentColor,
+              ),
+            ],
           ),
-          ToggleFavoriteButton(
-            audioSet: audioSet,
-            color: audioSet.category.colorTheme.accentColor,
-          )
-        ],
-      ),
+        ),
+        ToggleFavoriteButton(
+          audioSet: audioSet,
+          color: audioSet.category.colorTheme.accentColor,
+        )
+      ],
     );
   }
 }

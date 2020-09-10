@@ -95,7 +95,7 @@ class AudioController {
               id: url,
               title: item.name,
               artist: item.artist.name,
-              album: item.category.name,
+              album: item.category?.name ?? 'Pebbl',
               duration: Duration(seconds: item.duration))
           .toJson());
     }
@@ -145,7 +145,7 @@ class AudioController {
 }
 
 class AudioPlayerTask extends BackgroundAudioTask {
-  var _queue;
+  List<MediaItem> _queue;
   // var _queue = <MediaItem>[
   //   MediaItem(
   //     id: "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3",
@@ -230,6 +230,22 @@ class AudioPlayerTask extends BackgroundAudioTask {
       onPause();
     else
       onPlay();
+  }
+
+  @override
+  void onSkipToQueueItem(String mediaId) async {
+    final item = _queue.where((i) => i.id == mediaId);
+    if (item.isNotEmpty) {
+      _queueIndex = _queue.indexOf(item.first);
+    } else {
+      AudioServiceBackground.setMediaItem(mediaItem);
+      await _audioPlayer.setUrl(mediaItem.id);
+      if (_playing) {
+        onPlay();
+      } else {
+        _setState(processingState: AudioProcessingState.ready);
+      }
+    }
   }
 
   @override

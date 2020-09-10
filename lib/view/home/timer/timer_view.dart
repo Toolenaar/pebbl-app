@@ -40,10 +40,9 @@ class _TimerViewState extends State<TimerView> {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
     return Container(
-      color: colorTheme.backgroundColor,
-      padding: const EdgeInsets.all(24),
+      color: Colors.transparent,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: _timerData != null
           ? ActiveTimerView(
               onReset: () {
@@ -156,7 +155,7 @@ class TimerModeToggle extends StatelessWidget {
         onTap: () => onModeChanged(mode),
         child: Container(
           decoration: BoxDecoration(
-              color: selectedMode == mode ? colorTheme.highlightColor : Colors.transparent,
+              color: selectedMode == mode ? colorTheme.highlightColor : colorTheme.backgroundColor,
               border: Border(
                 left: BorderSide(width: 1, color: colorTheme.accentColor),
                 top: BorderSide(width: 1, color: colorTheme.accentColor),
@@ -207,7 +206,8 @@ class NormalTimerSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorTheme = AppColors.getActiveColorTheme(context);
     return Container(
-        decoration: BoxDecoration(border: Border.all(width: 1, color: colorTheme.accentColor)),
+        decoration: BoxDecoration(
+            color: colorTheme.backgroundColor, border: Border.all(width: 1, color: colorTheme.accentColor)),
         height: 200,
         child: ScrollPicker(
           onChanged: (value) {
@@ -256,12 +256,13 @@ class PomodoroTimerSelector extends StatelessWidget {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
+                        color: colorTheme.backgroundColor,
                         border: Border(
-                      left: BorderSide(width: 1, color: colorTheme.accentColor),
-                      right: BorderSide(width: 1, color: colorTheme.accentColor),
-                      top: BorderSide(width: 1, color: colorTheme.accentColor),
-                      bottom: BorderSide(width: 1, color: colorTheme.accentColor),
-                    )),
+                          left: BorderSide(width: 1, color: colorTheme.accentColor),
+                          right: BorderSide(width: 1, color: colorTheme.accentColor),
+                          top: BorderSide(width: 1, color: colorTheme.accentColor),
+                          bottom: BorderSide(width: 1, color: colorTheme.accentColor),
+                        )),
                     child: ScrollPicker(
                       onChanged: (value) {
                         workTimePicked(workMinutes.firstWhere((e) => e.toString() == value));
@@ -288,11 +289,12 @@ class PomodoroTimerSelector extends StatelessWidget {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
+                        color: colorTheme.backgroundColor,
                         border: Border(
-                      right: BorderSide(width: 1, color: colorTheme.accentColor),
-                      top: BorderSide(width: 1, color: colorTheme.accentColor),
-                      bottom: BorderSide(width: 1, color: colorTheme.accentColor),
-                    )),
+                          right: BorderSide(width: 1, color: colorTheme.accentColor),
+                          top: BorderSide(width: 1, color: colorTheme.accentColor),
+                          bottom: BorderSide(width: 1, color: colorTheme.accentColor),
+                        )),
                     child: ScrollPicker(
                       onChanged: (value) {
                         breakTimePicked(breakMinutes.firstWhere((e) => e.toString() == value));

@@ -48,6 +48,7 @@ class _AudioViewState extends State<AudioView> {
           );
         }
         return Container(
+          padding: const EdgeInsets.fromLTRB(24, 16, 16, 0),
           child: AudioPlayerView(
             audioSet: audioController.setForMediaItem(mediaItem),
           ),

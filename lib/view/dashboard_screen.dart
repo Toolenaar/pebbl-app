@@ -61,25 +61,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _viewForIndex() {
     if (_activeIndex == -1) {
-      return Positioned.fill(child: AudioView());
+      return AudioView();
     }
     if (_activeIndex == 1) {
-      return Positioned(bottom: 0, left: 0, right: 0, child: TimerView());
+      return TimerView();
     }
     if (_activeIndex == 0) {
-      return Positioned.fill(
-        child: SetsList(
-          onCategorySelected: _newCategorySelected,
-          close: () {
-            setState(() {
-              _activeIndex = -1;
-            });
-          },
-        ),
+      return SetsList(
+        onCategorySelected: _newCategorySelected,
+        close: () {
+          setState(() {
+            _activeIndex = -1;
+          });
+        },
       );
     }
     if (_activeIndex == 2) {
-      return Positioned.fill(child: FavoritesPage());
+      return FavoritesPage();
     }
     return SizedBox();
   }
@@ -93,37 +91,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
       backgroundColor: colorTheme.backgroundColor,
       body: !isInitialized
           ? const SizedBox()
-          : SafeArea(
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        if (_setsPresenter.activeCategory != null)
-                          AnimationView(
-                            animationFile: _setsPresenter.activeCategory.animationFileName,
-                          ),
-                        activeView
-                      ],
+          : Stack(
+              children: [
+                if (_setsPresenter.activeCategory != null)
+                  Positioned.fill(
+                    child: AnimationView(
+                      animationFile: _setsPresenter.activeCategory.animationFileName,
                     ),
                   ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: <Widget>[
-                  //     RaisedButton(
-                  //         child: Text('Sign-out'),
-                  //         onPressed: () async {
-                  //           await context.read<UserPresenter>().signOut();
-                  //         }),
-                  //   ],
-                  // ),
-                  const SizedBox(height: 16),
-                  BottomBar(
-                    activeIndex: _activeIndex,
-                    onTabChanged: _onTabChanged,
-                  )
-                ],
-              ),
+                Positioned.fill(
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 72),
+                      child: activeView,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  left: 0,
+                  child: SafeArea(
+                    child: BottomBar(
+                      activeIndex: _activeIndex,
+                      onTabChanged: _onTabChanged,
+                    ),
+                  ),
+                )
+              ],
             ),
     );
   }

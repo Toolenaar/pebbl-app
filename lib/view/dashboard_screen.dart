@@ -8,7 +8,7 @@ import 'package:pebbl/presenter/timer_presenter.dart';
 import 'package:pebbl/view/components/animation_view.dart';
 import 'package:pebbl/view/components/bottom_bar.dart';
 import 'package:pebbl/view/components/sets/sets_list.dart';
-import 'package:pebbl/view/home/audio_test.dart';
+import 'package:pebbl/view/home/audio_view.dart';
 import 'package:pebbl/view/home/favorites/favorites_page.dart';
 import 'package:pebbl/view/home/timer/timer_view.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +28,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     context.read<LocalNotificationHelper>().initLocalNotifications(context);
+    context.read<AudioController>().init();
     _setsPresenter = context.read<SetsPresenter>();
     _setsPresenter.init();
     context.read<TimerPresenter>().init();

@@ -52,7 +52,13 @@ class AudioController {
   AudioController() {
     AudioPlayer.setIosCategory(IosCategory.playback);
   }
+
+  final BehaviorSubject<AudioSet> activeTrackSubject = BehaviorSubject.seeded(null);
+  ValueStream<AudioSet> get activeTrackStream => activeTrackSubject.stream;
+
   static FirebaseStorage storage = FirebaseStorage();
+
+  StreamSubscription<ScreenState> _screenStateSub;
   Stream<ScreenState> get screenStateStream =>
       Rx.combineLatest3<List<MediaItem>, MediaItem, PlaybackState, ScreenState>(
           AudioService.queueStream,
@@ -68,12 +74,28 @@ class AudioController {
     return audioSet.first;
   }
 
-  AudioSet activeTrack() {
+  AudioSet _setActiveTrack(MediaItem item) {
     var item = AudioService.currentMediaItem;
+    if (item == null) return null;
     return setForMediaItem(item);
   }
 
-  void dispose() {}
+  void init() {
+    if (_screenStateSub == null) {
+      _screenStateSub = screenStateStream.listen((event) {
+        final mediaItem = event?.mediaItem;
+        if (mediaItem != null) {
+          activeTrackSubject.add(_setActiveTrack((mediaItem)));
+        }
+      });
+    }
+  }
+
+  void dispose() {
+    _screenStateSub.cancel();
+    _screenStateSub = null;
+  }
+
   void startPlaylistAtIndex(List<AudioSet> sets, int index) {
     _currentPlaylist = sets;
     _startPlaylist(index: index);
@@ -237,7 +259,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
     final item = _queue.where((i) => i.id == mediaId);
     if (item.isNotEmpty) {
       _queueIndex = _queue.indexOf(item.first);
-    } else {
       AudioServiceBackground.setMediaItem(mediaItem);
       await _audioPlayer.setUrl(mediaItem.id);
       if (_playing) {

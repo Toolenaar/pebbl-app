@@ -31,11 +31,9 @@ class _PlayerArtState extends State<PlayerArt> {
       builder: (BuildContext context, AsyncSnapshot<ScreenState> snapshot) {
         if (snapshot.data == null) return SizedBox();
         final screenState = snapshot.data;
-        final mediaItem = screenState?.mediaItem;
+
         final state = screenState?.playbackState;
         final isPlaying = state?.playing ?? false;
-
-        final audioSet = audioController.setForMediaItem(mediaItem);
 
         return Container(
           height: 128,

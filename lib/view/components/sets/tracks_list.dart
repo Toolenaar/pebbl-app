@@ -123,7 +123,9 @@ class TrackListItem extends StatelessWidget {
   final AudioSet audioSet;
   final Function onTap;
   final bool isInFavoriteList;
-  const TrackListItem({Key key, @required this.audioSet, @required this.onTap, this.isInFavoriteList = false})
+  final bool isActive;
+  const TrackListItem(
+      {Key key, @required this.audioSet, @required this.isActive, @required this.onTap, this.isInFavoriteList = false})
       : super(key: key);
 
   Widget _checkIfCurrentlyDownloading(BuildContext context) {
@@ -157,8 +159,6 @@ class TrackListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeSet = context.select<AudioController, AudioSet>((value) => value.activeTrack());
-    final isActive = activeSet != null && activeSet.id == audioSet.id;
     final colorTheme = AppColors.getActiveColorTheme(context);
     final color = colorTheme.accentColor;
     return GestureDetector(
@@ -188,8 +188,7 @@ class TrackListItem extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _setNameSuffix(color, context),
-            if (isInFavoriteList)
-              ToggleFavoriteButton(audioSet: audioSet, color: color, iconSize: 12)
+            if (isInFavoriteList) ToggleFavoriteButton(audioSet: audioSet, color: color, iconSize: 12)
           ],
         ),
       ),

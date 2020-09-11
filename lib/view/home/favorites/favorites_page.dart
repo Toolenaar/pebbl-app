@@ -8,6 +8,7 @@ import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/components/buttons/pebble_button.dart';
 import 'package:pebbl/view/components/sets/tracks_list.dart';
+import 'package:pebbl/view/home/audio/audio_player_view.dart';
 import 'package:provider/provider.dart';
 
 class FavoritesPage extends StatefulWidget {
@@ -21,8 +22,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
   Stream _favoritesStream;
   List<AudioSet> _favos;
   SetsPresenter _setsPresenter;
+
+  AudioController _audioController;
+
   @override
   void initState() {
+    _audioController = context.read<AudioController>();
     _setsPresenter = context.read<SetsPresenter>();
     _favoritesStream = context.read<UserPresenter>().favoritesStream();
     super.initState();
@@ -35,31 +40,37 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Widget _buildList(List<AudioSet> favos, CategoryColorTheme colorTheme) {
-    return Container(
-      decoration: BoxDecoration(border: Border.all(color: colorTheme.accentColor)),
-      child: ListView.builder(
-          itemCount: favos.length + 1,
-          itemBuilder: (ctx, index) {
-            if (index == 0) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 24, top: 16, bottom: 24),
-                child: H1Text(
-                  'Favorites',
-                  fontSize: 32,
-                  color: colorTheme.accentColor,
-                ),
-              );
-            }
-            final item = favos[index - 1];
-            return TrackListItem(
-              isInFavoriteList: true,
-              audioSet: item,
-              onTap: () {
-                context.read<AudioController>().startPlaylistAtIndex(_favos, index - 1);
-              },
-            );
-          }),
-    );
+    return StreamBuilder<AudioSet>(
+        stream: _audioController.activeTrackStream,
+        builder: (BuildContext context, AsyncSnapshot<AudioSet> snapshot) {
+          return Container(
+            decoration: BoxDecoration(border: Border.all(color: colorTheme.accentColor)),
+            child: ListView.builder(
+                itemCount: favos.length + 1,
+                itemBuilder: (ctx, index) {
+                  if (index == 0) {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 24, top: 16, bottom: 24),
+                      child: H1Text(
+                        'Favorites',
+                        fontSize: 32,
+                        color: colorTheme.accentColor,
+                      ),
+                    );
+                  }
+                  final item = favos[index - 1];
+                  return TrackListItem(
+                    isActive: snapshot.data != null && (snapshot.data.id == item.id),
+                    isInFavoriteList: true,
+                    audioSet: item,
+                    onTap: () {
+                      context.read<AudioController>().activeTrackSubject.add(item);
+                      context.read<AudioController>().startPlaylistAtIndex(_favos, index - 1);
+                    },
+                  );
+                }),
+          );
+        });
   }
 
   Widget _buildShuffleButton(CategoryColorTheme colorTheme) {

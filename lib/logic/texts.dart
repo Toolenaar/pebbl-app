@@ -19,13 +19,15 @@ class BodyText2 extends StatelessWidget {
   final String text;
   final Color color;
   final double fontSize;
-  const BodyText2(this.text, {Key key, this.color = Colors.white, this.fontSize}) : super(key: key);
+  final FontStyle fontStyle;
+  const BodyText2(this.text, {Key key, this.color = Colors.white, this.fontSize, this.fontStyle}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final base = Theme.of(context).textTheme.bodyText2;
     return Text(
       text,
-      style: Theme.of(context).textTheme.bodyText2.copyWith(color: color, fontSize: fontSize),
+      style: base.copyWith(color: color, fontSize: fontSize, fontStyle: fontStyle ?? base.fontStyle),
     );
   }
 }

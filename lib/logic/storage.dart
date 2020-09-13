@@ -13,6 +13,7 @@ class StorageHelper {
 }
 
 class LocalStorage {
+  static const String TOUR_KEY = 'TOUR_KEY';
   static Future saveTimerData(TimerData data) async {
     if (data == null) {
       await setString('TIMER_DATA', null);
@@ -40,5 +41,16 @@ class LocalStorage {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     return prefs.getString(key);
+  }
+
+  static Future setBool(String key, bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setBool(key, value);
+  }
+
+  static Future<bool> getbool(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    return prefs.getBool(key);
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pebbl/logic/audio/audio_controller.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/local_notification_helper.dart';
+import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/presenter/timer_presenter.dart';
@@ -11,6 +12,7 @@ import 'package:pebbl/view/components/sets/sets_list.dart';
 import 'package:pebbl/view/home/audio_view.dart';
 import 'package:pebbl/view/home/favorites/favorites_page.dart';
 import 'package:pebbl/view/home/timer/timer_view.dart';
+import 'package:pebbl/view/home/tutorial_view.dart';
 import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -23,6 +25,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _activeIndex = -1;
   SetsPresenter _setsPresenter;
+  bool _showTour = false;
 
   @override
   void initState() {
@@ -32,6 +35,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _setsPresenter = context.read<SetsPresenter>();
     _setsPresenter.init();
     context.read<TimerPresenter>().init();
+    _loadSettings();
+  }
+
+  void _loadSettings() async {
+    _showTour = await LocalStorage.getbool(LocalStorage.TOUR_KEY) ?? true;
   }
 
   @override
@@ -42,6 +50,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _onTabChanged(int index) {
+    if (_showTour) return;
     setState(() {
       if (index == _activeIndex) {
         _activeIndex = -1;
@@ -118,7 +127,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       onTabChanged: _onTabChanged,
                     ),
                   ),
-                )
+                ),
+                if (_showTour)
+                  Positioned(
+                    bottom: 72,
+                    right: 24,
+                    left: 24,
+                    child: SafeArea(
+                      child: TutorialView(
+                        onTourCompleted: () {
+                          setState(() {
+                            _showTour = false;
+                            LocalStorage.setBool(LocalStorage.TOUR_KEY, false);
+                          });
+                        },
+                      ),
+                    ),
+                  )
               ],
             ),
     );

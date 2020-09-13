@@ -8,6 +8,7 @@ import 'package:pebbl/presenter/sets_presenter.dart';
 class AppColors {
   static const Color background = Color(0xFF222224);
   static const Color inactive = Color(0xFF9898A0);
+  static const Color componentBg = Color(0xFF5F5F64);
   static const Color text = Color(0xFFFFFEF9);
   static const Color text70 = Color(0xB3FFFEF9);
   static CategoryColorTheme colorTheme = CategoryColorTheme(

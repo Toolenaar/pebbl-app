@@ -39,12 +39,7 @@ class _AudioViewState extends State<AudioView> {
         final colorTheme = AppColors.getActiveColorTheme(context);
         if (processingState == AudioProcessingState.none) {
           return Container(
-            child: Center(
-              child: BodyText2(
-                'Select a playlist to begin!',
-                color: colorTheme.accentColor40,
-              ),
-            ),
+            child: Center(child: Image.asset('assets/img/img_center_piece.png')),
           );
         }
         return Container(

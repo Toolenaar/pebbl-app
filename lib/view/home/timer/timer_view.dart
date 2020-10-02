@@ -113,7 +113,7 @@ class TimerSetupView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Column(
@@ -152,7 +152,7 @@ class TimerModeToggle extends StatelessWidget {
   const TimerModeToggle({Key key, @required this.onModeChanged, @required this.selectedMode}) : super(key: key);
 
   Widget _buildButton({String mode, String title, BuildContext context, bool last = false}) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     return Expanded(
       child: GestureDetector(
         onTap: () => onModeChanged(mode),
@@ -179,7 +179,7 @@ class TimerModeToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     return Container(
         child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -207,7 +207,7 @@ class NormalTimerSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     return Container(
         decoration: BoxDecoration(
             color: colorTheme.backgroundColor, border: Border.all(width: 1, color: colorTheme.accentColor)),
@@ -243,7 +243,7 @@ class PomodoroTimerSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     return Container(
       // decoration: BoxDecoration(border: Border.all(width: 1, color: colorTheme.accentColor)),
       height: 200,

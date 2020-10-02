@@ -28,45 +28,59 @@ class _PebblAppState extends State<PebblApp> {
   static UserPresenter _userPresenter = UserPresenter();
   final FirebaseAnalytics analytics = FirebaseAnalytics();
   LocalNotificationHelper _notificationHelper;
+  AppColorsController _controller;
 
   @override
   void initState() {
-    _userPresenter.initialize();
     super.initState();
+    _userPresenter.initialize();
+    _controller = AppColorsController();
+  }
+
+  _init() async {
+    await _controller.init(context);
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => SetsPresenter(),
-        ),
-        Provider(
-          create: (context) => _userPresenter,
-        ),
-        Provider(
-          create: (context) => AudioController(),
-        ),
-        Provider(
-          create: (context) => TimerPresenter(),
-        ),
-        Provider(create: (context) => _notificationHelper = LocalNotificationHelper())
-      ],
-      child: MaterialApp(
-        theme: ThemeData(
-          accentColor: AppColors.text,
-          textTheme: GoogleFonts.karlaTextTheme(
-            Theme.of(context).textTheme,
+    if (!_controller.initialized) {
+      _init();
+      return SizedBox();
+    }
+    return AppColors(
+      controller: _controller,
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => SetsPresenter(),
           ),
-        ),
-        navigatorObservers: [
-          FirebaseAnalyticsObserver(analytics: analytics),
+          Provider(
+            create: (context) => _userPresenter,
+          ),
+          Provider(
+            create: (context) => AudioController(),
+          ),
+          Provider(
+            create: (context) => TimerPresenter(),
+          ),
+          Provider(create: (context) => _notificationHelper = LocalNotificationHelper())
         ],
-        home: AudioServiceWidget(
-          child: AppInitializer(
-            homePage: DashboardScreen(),
-            loginPage: LoginStartScreen(),
+        child: MaterialApp(
+          theme: ThemeData(
+            accentColor: _controller.activeColorTheme().accentColor,
+            textTheme: GoogleFonts.karlaTextTheme(
+              Theme.of(context).textTheme,
+            ),
+          ),
+          navigatorObservers: [
+            FirebaseAnalyticsObserver(analytics: analytics),
+          ],
+          home: AudioServiceWidget(
+            child: AppInitializer(
+              homePage: DashboardScreen(),
+              loginPage: LoginStartScreen(),
+            ),
           ),
         ),
       ),

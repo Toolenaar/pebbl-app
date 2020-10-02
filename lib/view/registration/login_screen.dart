@@ -72,11 +72,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.of(context).activeColorTheme().backgroundColor,
       appBar: AppBar(
         brightness: Brightness.dark,
         elevation: 0,
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.of(context).activeColorTheme().backgroundColor,
       ),
       body: _loggingIn
           ? ProgressView()
@@ -123,7 +123,8 @@ class AnimatedLoginGraphic extends StatelessWidget {
   const AnimatedLoginGraphic({
     Key key,
     @required bool formActive,
-  }) : _formActive = formActive, super(key: key);
+  })  : _formActive = formActive,
+        super(key: key);
 
   final bool _formActive;
 
@@ -141,7 +142,7 @@ class AnimatedLoginGraphic extends StatelessWidget {
             child: Image.asset(
               'assets/img/img_center_piece.png',
               fit: BoxFit.fitHeight,
-              color: AppColors.text,
+              color: AppColors.of(context).activeColorTheme().accentColor,
             ),
           ),
         ],

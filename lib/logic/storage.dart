@@ -14,6 +14,9 @@ class StorageHelper {
 
 class LocalStorage {
   static const String TOUR_KEY = 'TOUR_KEY';
+  static const String AUTO_BREAK_TIMER_KEY = 'AUTO_BREAK_TIMER_KEY';
+  static const String NIGHT_THEME_KEY = 'NIGHT_THEME_KEY';
+  static const String DAY_THEME_KEY = 'DAY_THEME_KEY';
   static Future saveTimerData(TimerData data) async {
     if (data == null) {
       await setString('TIMER_DATA', null);

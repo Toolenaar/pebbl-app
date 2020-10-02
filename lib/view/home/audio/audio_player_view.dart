@@ -25,7 +25,7 @@ class _AudioPlayerState extends State<AudioPlayerView> {
   @override
   Widget build(BuildContext context) {
     if (widget.audioSet == null) return Container();
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -190,7 +190,7 @@ class PlayerControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     final icon = controller.isPlaying ? 'assets/img/ic_pause.png' : 'assets/img/ic_play.png';
     return Container(
       child: Column(
@@ -199,7 +199,7 @@ class PlayerControls extends StatelessWidget {
           Image.asset(icon),
           const SizedBox(height: 8),
           BodyText2(
-            controller.isPlaying ? '' : 'music paused',
+            controller.isPlaying ? '' : 'MUSIC PAUSED',
             fontSize: 16,
             color: colorTheme.accentColor,
             fontWeight: FontWeight.bold,

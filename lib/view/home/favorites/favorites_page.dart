@@ -105,7 +105,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     return StreamBuilder<List<AudioSet>>(
       stream: _favoritesStream,
       initialData: null,

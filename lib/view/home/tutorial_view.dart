@@ -23,7 +23,7 @@ class _TutorialViewState extends State<TutorialView> {
         children: [
           PebbleButton(
             title: _step == 2 ? 'Try Pebbl' : 'Next',
-            backgroundColor: AppColors.componentBg,
+            backgroundColor: AppColors.of(context).activeColorTheme().highlightColor,
             onTap: () {
               setState(() {
                 _step += 1;
@@ -73,7 +73,7 @@ class _TutorialContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = AppColors.getActiveColorTheme(context).backgroundColor;
+    final bgColor = AppColors.of(context).activeColorTheme().backgroundColor;
     return Stack(
       overflow: Overflow.visible,
       children: [

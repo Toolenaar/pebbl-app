@@ -11,11 +11,11 @@ class LoginStartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.of(context).activeColorTheme().backgroundColor,
       appBar: AppBar(
         brightness: Brightness.dark,
         elevation: 0,
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.of(context).activeColorTheme().backgroundColor,
       ),
       body: Container(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
@@ -30,12 +30,15 @@ class LoginStartScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     Image.asset(
                       'assets/img/img_center_piece.png',
-                      color: AppColors.text,
+                      color: AppColors.of(context).activeColorTheme().accentColor,
                     ),
                     const SizedBox(height: 24),
                     Text(
                       'Welcome to pebbl',
-                      style: Theme.of(context).textTheme.headline6.copyWith(color: AppColors.text),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          .copyWith(color: AppColors.of(context).activeColorTheme().accentColor),
                     )
                   ],
                 ),

@@ -30,7 +30,7 @@ class _TimerViewState extends State<CountdownTimerView> {
 
   Widget _buildText(String time) {
     return BodyText2(
-      time,
+      time ?? '',
       color: widget.color,
       fontSize: widget.fontSize,
     );

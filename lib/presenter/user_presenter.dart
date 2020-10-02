@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/model/services/audio_service.dart';
 import 'package:pebbl/model/services/firebase_service.dart';
@@ -14,14 +15,16 @@ class UserPresenter {
   final _service = UserService();
   User loggedInUser;
   AppUser user;
+  AppColors appColors;
 
   final BehaviorSubject<bool> isInitialized = BehaviorSubject.seeded(null);
   ValueStream<bool> get initializationStream => isInitialized.stream;
 
   StreamSubscription<User> _loginSub;
 
-  void initialize() {
+  void initialize() async {
     if (_loginSub != null) return;
+
     _loginSub = _auth.authStateChanges().listen((event) async {
       loggedInUser = _auth.currentUser;
       if (loggedInUser != null) {
@@ -74,7 +77,7 @@ class UserPresenter {
     }
   }
 
-  Future signOut() async {
+  Future signOut(BuildContext context) async {
     user = null;
     loggedInUser = null;
     _loginSub.cancel();

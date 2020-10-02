@@ -36,7 +36,7 @@ class _AudioViewState extends State<AudioView> {
         final processingState = state?.processingState ?? AudioProcessingState.none;
         print(processingState);
         print(mediaItem);
-        final colorTheme = AppColors.getActiveColorTheme(context);
+
         if (processingState == AudioProcessingState.none) {
           return Container(
               // child: Center(child: Image.asset('assets/img/img_center_piece.png')),

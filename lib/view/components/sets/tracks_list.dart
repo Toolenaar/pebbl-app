@@ -159,7 +159,7 @@ class TrackListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     final color = colorTheme.accentColor;
     return GestureDetector(
       onTap: onTap,

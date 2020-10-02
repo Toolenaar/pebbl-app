@@ -20,30 +20,31 @@ class PebblFormField extends StatelessWidget {
       this.obscureText = false})
       : super(key: key);
 
-  static InputDecoration decorator = InputDecoration(
-    hintStyle: TextStyle(color: AppColors.text70),
-    enabledBorder: UnderlineInputBorder(
-      borderSide: BorderSide(color: AppColors.text),
-    ),
-    focusedBorder: UnderlineInputBorder(
-      borderSide: BorderSide(color: AppColors.text, width: 1),
-    ),
-    border: UnderlineInputBorder(
-      borderSide: BorderSide(color: AppColors.text),
-    ),
-  );
-
   @override
   Widget build(BuildContext context) {
+    final colorTheme = AppColors.of(context).activeColorTheme();
+    var decorator = InputDecoration(
+      hintStyle: TextStyle(color: colorTheme.accentColor40),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: colorTheme.backgroundColor),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: colorTheme.accentColor, width: 1),
+      ),
+      border: UnderlineInputBorder(
+        borderSide: BorderSide(color: colorTheme.accentColor),
+      ),
+    );
+
     return TextFormField(
         focusNode: focusNode,
         initialValue: initialValue,
         obscureText: obscureText,
         onChanged: onChanged,
-        style: TextStyle(color: AppColors.text),
+        style: TextStyle(color: colorTheme.accentColor),
         validator: validator,
         keyboardType: keyboardType,
-        cursorColor: AppColors.text,
+        cursorColor: colorTheme.accentColor,
         decoration: decorator.copyWith(hintText: hintText));
   }
 }

@@ -64,8 +64,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     final presenter = context.read<UserPresenter>();
 
-    var result =
-        await presenter.signUpWithEmail(context, email: _email, password: _password, username: _username);
+    var result = await presenter.signUpWithEmail(context, email: _email, password: _password, username: _username);
     if (result != null) {
       NavigationHelper.navigateAndRemove(context, DashboardScreen(), 'DashboardScreen');
     } else {
@@ -83,12 +82,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.of(context).activeColorTheme().backgroundColor,
       appBar: AppBar(
-        brightness: Brightness.dark,
-        elevation: 0,
-        backgroundColor: AppColors.background,
-      ),
+          brightness: Brightness.dark,
+          elevation: 0,
+          backgroundColor: AppColors.of(context).activeColorTheme().backgroundColor),
       body: _loggingIn
           ? ProgressView()
           : GestureDetector(

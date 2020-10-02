@@ -35,7 +35,7 @@ class PebbleButton extends StatelessWidget {
       this.splashColor,
       this.highlightColor,
       this.backgroundColor = Colors.transparent,
-      this.color = AppColors.text})
+      this.color = Colors.white})
       : super(key: key);
 
   @override
@@ -77,7 +77,10 @@ class PebbleTextButton extends StatelessWidget {
           child: Center(
               child: Text(
             title,
-            style: Theme.of(context).textTheme.bodyText2.copyWith(color: AppColors.text, fontSize: 14),
+            style: Theme.of(context)
+                .textTheme
+                .bodyText2
+                .copyWith(color: AppColors.of(context).activeColorTheme().accentColor, fontSize: 14),
           )),
         ),
       ),

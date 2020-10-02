@@ -72,6 +72,8 @@ flutter:
     - assets/animations/study_data.json
     - assets/img/ic_play.png
     - assets/img/ic_pause.png
+    - assets/img/ic_settings.png
+    - assets/img/ic_back.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

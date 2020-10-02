@@ -3,8 +3,7 @@ import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/validation.dart';
 
 class DialogHelper {
-  static Future showResetPasswordDialog(
-      BuildContext mainContext, String email, Function(String) onReset) async {
+  static Future showResetPasswordDialog(BuildContext mainContext, String email, Function(String) onReset) async {
     var result = await showDialog<String>(
         context: mainContext,
         builder: (BuildContext context) {
@@ -51,7 +50,7 @@ class DialogHelper {
                 'Cancel',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: AppColors.text,
+                  color: AppColors.of(context).activeColorTheme().accentColor,
                 ),
               ),
               onPressed: () {
@@ -63,7 +62,7 @@ class DialogHelper {
                 'Ok',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: AppColors.text,
+                  color: AppColors.of(context).activeColorTheme().accentColor,
                 ),
               ),
               onPressed: () {
@@ -106,7 +105,7 @@ class DialogHelper {
             FlatButton(
               child: Text(
                 'OK',
-                style: TextStyle(fontSize: 16,color: Colors.black),
+                style: TextStyle(fontSize: 16, color: Colors.black),
               ),
               onPressed: () {
                 if (ok != null) ok();
@@ -168,7 +167,7 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
         actions: <Widget>[
           new FlatButton(
               child: const Text('CANCEL', style: TextStyle(fontSize: 16)),
-              textColor: AppColors.text,
+              textColor: AppColors.of(context).activeColorTheme().accentColor,
               onPressed: () {
                 Navigator.pop(context, '');
               }),
@@ -177,7 +176,7 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
                 'SEND',
                 style: TextStyle(fontSize: 16),
               ),
-              textColor: AppColors.text,
+              textColor: AppColors.of(context).activeColorTheme().accentColor,
               onPressed: !Validation.isValidEmail(_email)
                   ? null
                   : () {

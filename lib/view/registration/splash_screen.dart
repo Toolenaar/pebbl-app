@@ -8,10 +8,10 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:AppColors.background,
+      backgroundColor: AppColors.of(context).activeColorTheme().backgroundColor,
       body: Container(
         child: ProgressView(
-          color:AppColors.text,
+          color: AppColors.of(context).activeColorTheme().accentColor,
         ),
       ),
     );

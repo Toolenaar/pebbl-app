@@ -24,7 +24,7 @@ class _PlayerArtState extends State<PlayerArt> {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
 
     return StreamBuilder<ScreenState>(
       stream: audioController.screenStateStream,

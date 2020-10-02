@@ -114,53 +114,59 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isInitialized = context.select<SetsPresenter, bool>((value) => value.isInitialized);
-    final colorTheme = AppColors.getActiveColorTheme(context);
-    final activeView = _viewForIndex();
-    return Scaffold(
-      backgroundColor: colorTheme.backgroundColor,
-      body: !isInitialized
-          ? const SizedBox()
-          : Stack(
-              children: [
-                _buildAnimationView(),
-                Positioned.fill(
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 72),
-                      child: activeView,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  child: SafeArea(
-                    child: BottomBar(
-                      activeIndex: _activeIndex,
-                      onTabChanged: _onTabChanged,
-                    ),
-                  ),
-                ),
-                if (_showTour)
-                  Positioned(
-                    bottom: 72,
-                    right: 24,
-                    left: 24,
-                    child: SafeArea(
-                      child: TutorialView(
-                        onTourCompleted: () {
-                          setState(() {
-                            _showTour = false;
-                            LocalStorage.setBool(LocalStorage.TOUR_KEY, false);
-                          });
-                        },
+    return StreamBuilder(
+      stream: AppColors.of(context).controller.activeColorThemeStream,
+      initialData: null,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        final isInitialized = context.select<SetsPresenter, bool>((value) => value.isInitialized);
+        final colorTheme = AppColors.of(context).activeColorTheme();
+        final activeView = _viewForIndex();
+        return Scaffold(
+          backgroundColor: colorTheme.backgroundColor,
+          body: !isInitialized
+              ? const SizedBox()
+              : Stack(
+                  children: [
+                    _buildAnimationView(),
+                    Positioned.fill(
+                      child: SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 72),
+                          child: activeView,
+                        ),
                       ),
                     ),
-                  )
-              ],
-            ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      left: 0,
+                      child: SafeArea(
+                        child: BottomBar(
+                          activeIndex: _activeIndex,
+                          onTabChanged: _onTabChanged,
+                        ),
+                      ),
+                    ),
+                    if (_showTour)
+                      Positioned(
+                        bottom: 72,
+                        right: 24,
+                        left: 24,
+                        child: SafeArea(
+                          child: TutorialView(
+                            onTourCompleted: () {
+                              setState(() {
+                                _showTour = false;
+                                LocalStorage.setBool(LocalStorage.TOUR_KEY, false);
+                              });
+                            },
+                          ),
+                        ),
+                      )
+                  ],
+                ),
+        );
+      },
     );
   }
 }

@@ -12,7 +12,6 @@ class SetsPresenter with ChangeNotifier {
   static CategoryService _categoryService = CategoryService();
   // static DownloadManager _downloadManager = DownloadManager();
 
-  CategoryColorTheme activeColorTheme;
   Category activeCategory;
 
   List<AudioSet> loadedSets;
@@ -27,7 +26,7 @@ class SetsPresenter with ChangeNotifier {
 
   void init() async {
     if (isInitialized) return;
-    activeColorTheme = AppColors.colorTheme;
+
     _categories = await _categoryService.fetchCategories();
     fetchSets();
     // await _downloadManager.init();
@@ -43,9 +42,10 @@ class SetsPresenter with ChangeNotifier {
 
   void setActiveCategory(Category category) {
     activeCategory = category;
-    activeColorTheme = category.colorTheme;
+
     notifyListeners();
   }
+
   // Future _loadDownloadedSets() async {
   //   await _downloadManager.loadDownloadedSets(loadedSets);
   //   notifyListeners();

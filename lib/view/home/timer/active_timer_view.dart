@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/local_notification_helper.dart';
+import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/timer_data.dart';
 import 'package:pebbl/presenter/timer_presenter.dart';
@@ -96,13 +97,23 @@ class _ActiveTimerViewState extends State<ActiveTimerView> {
     return stopText;
   }
 
+  void _autoStartBreak() async {
+    if (_timerData.needsAbreak) {
+      final autoBreakTime = await LocalStorage.getbool(LocalStorage.AUTO_BREAK_TIMER_KEY) ?? false;
+      if (autoBreakTime) {
+        _startBreak();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     return StreamBuilder<String>(
       stream: countdownTimeStream,
       initialData: '',
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        _autoStartBreak();
         return Container(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
           child: Column(

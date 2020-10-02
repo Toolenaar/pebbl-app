@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
+import 'package:pebbl/logic/navigation_helper.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
+import 'package:pebbl/view/home/settings_page.dart';
 
 import 'package:provider/provider.dart';
 
@@ -19,6 +21,7 @@ class _SetsListState extends State<SetsList> {
   GroupedByCategory _selectedCategory;
 
   Widget _buildSetsList() {
+    final colorTheme = AppColors.of(context).activeColorTheme();
     var items = context.select<SetsPresenter, List<GroupedByCategory>>((value) => value.setCategories);
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -30,16 +33,31 @@ class _SetsListState extends State<SetsList> {
               );
             },
             itemBuilder: (context, index) {
+              if (index == 0) {
+                return Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    icon: ImageIcon(
+                      AssetImage('assets/img/ic_settings.png'),
+                      color: colorTheme.accentColor,
+                    ),
+                    onPressed: () async {
+                      await NavigationHelper.navigate(context, SettingsPage(), 'SettingsPage');
+                      setState(() {});
+                    },
+                  ),
+                );
+              }
               return SetsListCategoryListItem(
                 onSetSelected: (categoryGroup) {
                   _selectedCategory = categoryGroup;
                   widget.onCategorySelected(categoryGroup);
                   setState(() {});
                 },
-                category: items[index],
+                category: items[index - 1],
               );
             },
-            itemCount: items.length),
+            itemCount: items.length + 1),
       ),
     );
   }
@@ -66,7 +84,7 @@ class SetsListCategoryListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = category.category.colorTheme;
+    final colorTheme = AppColors.of(context).activeColorTheme();
     return GestureDetector(
       onTap: () {
         onSetSelected(category);
@@ -96,7 +114,7 @@ class DownloadProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
 
     return Stack(
       children: <Widget>[

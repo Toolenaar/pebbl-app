@@ -96,7 +96,7 @@ class _TimerBottomBarItemState extends State<TimerBottomBarItem> {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     final color = widget.isActive ? colorTheme.accentColor : colorTheme.accentColor40;
 
     return StreamBuilder<TimerData>(
@@ -123,7 +123,7 @@ class TextBottomBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     final color = isActive ? colorTheme.accentColor : colorTheme.accentColor40;
     return BodyText2(title, color: color);
   }
@@ -135,7 +135,7 @@ class ActiveSetBottomBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
+    final colorTheme = AppColors.of(context).activeColorTheme();
     final color = isActive ? colorTheme.accentColor : colorTheme.accentColor40;
     final activeCat = context.select<SetsPresenter, Category>((value) => value.activeCategory);
     return FittedBox(fit: BoxFit.fitWidth, child: BodyText2(activeCat?.name ?? 'P: Empty', color: color));

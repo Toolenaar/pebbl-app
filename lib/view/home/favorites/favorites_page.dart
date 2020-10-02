@@ -8,7 +8,6 @@ import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/components/buttons/pebble_button.dart';
 import 'package:pebbl/view/components/sets/tracks_list.dart';
-import 'package:pebbl/view/home/audio/audio_player_view.dart';
 import 'package:provider/provider.dart';
 
 class FavoritesPage extends StatefulWidget {
@@ -43,32 +42,55 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return StreamBuilder<AudioSet>(
         stream: _audioController.activeTrackStream,
         builder: (BuildContext context, AsyncSnapshot<AudioSet> snapshot) {
-          return Container(
-            decoration: BoxDecoration(border: Border.all(color: colorTheme.accentColor)),
-            child: ListView.builder(
-                itemCount: favos.length + 1,
-                itemBuilder: (ctx, index) {
-                  if (index == 0) {
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 24, top: 16, bottom: 24),
-                      child: H1Text(
-                        'Favorites',
-                        fontSize: 32,
-                        color: colorTheme.accentColor,
-                      ),
-                    );
-                  }
-                  final item = favos[index - 1];
-                  return TrackListItem(
-                    isActive: snapshot.data != null && (snapshot.data.id == item.id),
-                    isInFavoriteList: true,
-                    audioSet: item,
-                    onTap: () {
-                      context.read<AudioController>().activeTrackSubject.add(item);
-                      context.read<AudioController>().startPlaylistAtIndex(_favos, index - 1);
-                    },
-                  );
-                }),
+          return Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(border: Border.all(color: colorTheme.accentColor)),
+                child: ListView.builder(
+                    itemCount: favos.length + 1,
+                    itemBuilder: (ctx, index) {
+                      if (index == 0) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 48, top: 24, bottom: 16),
+                          child: H1Text(
+                            'Favorites',
+                            fontSize: 20,
+                            color: colorTheme.accentColor,
+                          ),
+                        );
+                      }
+                      final item = favos[index - 1];
+                      return TrackListItem(
+                        isActive: snapshot.data != null && (snapshot.data.id == item.id),
+                        isInFavoriteList: true,
+                        audioSet: item,
+                        onTap: () {
+                          context.read<AudioController>().activeTrackSubject.add(item);
+                          context.read<AudioController>().startPlaylistAtIndex(_favos, index - 1);
+                        },
+                      );
+                    }),
+              ),
+              Positioned(
+                bottom: 1,
+                left: 1,
+                right: 1,
+                child: Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter, // 10% of the width, so there are ten blinds.
+                        colors: [
+                          colorTheme.backgroundColor,
+                          colorTheme.backgroundColor.withOpacity(0.6),
+                          colorTheme.backgroundColor.withOpacity(0.1)
+                        ] // whitish to gray
+                        ),
+                  ),
+                ),
+              ),
+            ],
           );
         });
   }

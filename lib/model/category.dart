@@ -23,16 +23,14 @@ class CategoryColorTheme {
 class Category {
   final String id;
   final String name;
-  final String animationFileName;
   final CategoryColorTheme colorTheme;
 
-  Category({this.id, this.name, this.colorTheme, this.animationFileName});
+  Category({this.id, this.name, this.colorTheme});
 
   static Category fromJson(Map json) {
     return Category(
       id: json['id'],
       name: json['name'],
-      animationFileName: json['animationFileName'],
       colorTheme: CategoryColorTheme.fromJson(json['colorTheme']),
     );
   }

@@ -52,7 +52,7 @@ class AudioController {
   AudioController() {
     AudioPlayer.setIosCategory(IosCategory.playback);
   }
-
+  bool get isPlaying => AudioService.playbackState.playing;
   final BehaviorSubject<AudioSet> activeTrackSubject = BehaviorSubject.seeded(null);
   ValueStream<AudioSet> get activeTrackStream => activeTrackSubject.stream;
 
@@ -151,6 +151,15 @@ class AudioController {
 
   void skipPrevious() {
     AudioService.skipToPrevious();
+  }
+
+  void togglePlay() {
+    bool isPlaying = AudioService.playbackState.playing;
+    if (isPlaying) {
+      pause();
+    } else {
+      play();
+    }
   }
 
   void pause() {

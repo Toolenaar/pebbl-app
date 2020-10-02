@@ -4,7 +4,6 @@ import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/presenter/user_presenter.dart';
-import 'package:pebbl/view/home/audio/player_art.dart';
 import 'package:provider/provider.dart';
 
 class AudioPlayerView extends StatefulWidget {
@@ -25,36 +24,64 @@ class _AudioPlayerState extends State<AudioPlayerView> {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColors.getActiveColorTheme(context);
     if (widget.audioSet == null) return Container();
-
+    final colorTheme = AppColors.getActiveColorTheme(context);
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          TrackInfo(
-            audioSet: widget.audioSet,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 16, 0),
+            child: TrackInfo(
+              audioSet: widget.audioSet,
+            ),
           ),
           Expanded(
             child: Center(
               child: Row(
                 children: <Widget>[
-                  IconButton(
-                    color: colorTheme.accentColor,
-                    icon: Icon(Icons.skip_previous),
-                    iconSize: 32,
-                    onPressed: () {
-                      audioController.skipPrevious();
-                    },
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      splashColor: colorTheme.accentColor.withOpacity(0.2),
+                      highlightColor: colorTheme.accentColor.withOpacity(0.2),
+                      onTap: () {
+                        audioController.skipPrevious();
+                      },
+                      child: Container(
+                        color: Colors.transparent, //Colors.blue.withOpacity(0.4),
+                        width: MediaQuery.of(context).size.width / 4,
+                      ),
+                    ),
                   ),
-                  Expanded(child: Center(child: PlayerArt())),
-                  IconButton(
-                    color: colorTheme.accentColor,
-                    icon: Icon(Icons.skip_next),
-                    iconSize: 32,
-                    onPressed: () {
-                      audioController.skipNext();
-                    },
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        audioController.togglePlay();
+                      },
+                      child: Container(
+                        color: Colors.transparent, //Colors.yellow.withOpacity(0.4),
+                        child: Center(
+                          child: PlayerControls(
+                            controller: audioController,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      splashColor: colorTheme.accentColor.withOpacity(0.2),
+                      highlightColor: colorTheme.accentColor.withOpacity(0.2),
+                      onTap: () {
+                        audioController.skipNext();
+                      },
+                      child: Container(
+                        color: Colors.transparent, //Colors.blue.withOpacity(0.4),
+                        width: MediaQuery.of(context).size.width / 4,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -153,6 +180,32 @@ class _ToggleFavoriteButtonState extends State<ToggleFavoriteButton> {
           ),
         );
       },
+    );
+  }
+}
+
+class PlayerControls extends StatelessWidget {
+  final AudioController controller;
+  const PlayerControls({Key key, this.controller}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTheme = AppColors.getActiveColorTheme(context);
+    final icon = controller.isPlaying ? 'assets/img/ic_pause.png' : 'assets/img/ic_play.png';
+    return Container(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(icon),
+          const SizedBox(height: 8),
+          BodyText2(
+            controller.isPlaying ? '' : 'music paused',
+            fontSize: 16,
+            color: colorTheme.accentColor,
+            fontWeight: FontWeight.bold,
+          )
+        ],
+      ),
     );
   }
 }

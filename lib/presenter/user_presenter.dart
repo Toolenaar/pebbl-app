@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pebbl/model/audio_set.dart';
@@ -10,39 +12,44 @@ import 'package:rxdart/rxdart.dart';
 class UserPresenter {
   final _auth = FirebaseAuth.instance;
   final _service = UserService();
-  FirebaseUser loggedInUser;
-  User user;
+  User loggedInUser;
+  AppUser user;
 
   final BehaviorSubject<bool> isInitialized = BehaviorSubject.seeded(null);
   ValueStream<bool> get initializationStream => isInitialized.stream;
 
-  void initialize() async {
-    loggedInUser = await _auth.currentUser();
-    if (loggedInUser != null) {
-      if (!loggedInUser.isEmailVerified) {
-        await loggedInUser.getIdToken(refresh: true);
-        await loggedInUser.reload();
+  StreamSubscription<User> _loginSub;
+
+  void initialize() {
+    if (_loginSub != null) return;
+    _loginSub = _auth.authStateChanges().listen((event) async {
+      loggedInUser = _auth.currentUser;
+      if (loggedInUser != null) {
+        if (!loggedInUser.emailVerified) {
+          await loggedInUser.getIdToken(true);
+          await loggedInUser.reload();
+        }
+
+        user = await fetchUser(loggedInUser.uid);
       }
 
-      user = await fetchUser(loggedInUser.uid);
-    }
-
-    isInitialized.add(true);
+      isInitialized.add(true);
+    });
   }
 
-  Future<User> fetchUser(String id) async {
+  Future<AppUser> fetchUser(String id) async {
     FirebaseResult result = await _service.getById(id);
     if (result == null) {
       return null;
     }
-    this.user = User.fromJson(result.data, result.id);
+    this.user = AppUser.fromJson(result.data, result.id);
 
     return this.user;
   }
 
-  Future<User> login({@required String email, @required String password}) async {
+  Future<AppUser> login({@required String email, @required String password}) async {
     try {
-      AuthResult authResult = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      UserCredential authResult = await _auth.signInWithEmailAndPassword(email: email, password: password);
       loggedInUser = authResult.user;
     } catch (e) {
       return null;
@@ -56,7 +63,7 @@ class UserPresenter {
     try {
       var authResult = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       loggedInUser = authResult.user;
-      user = User(email: email, username: username, id: loggedInUser.uid);
+      user = AppUser(email: email, username: username, id: loggedInUser.uid);
 
       var result = await _service.create(user.toJson(), docId: loggedInUser.uid);
 
@@ -70,25 +77,27 @@ class UserPresenter {
   Future signOut() async {
     user = null;
     loggedInUser = null;
+    _loginSub.cancel();
+    _loginSub = null;
     isInitialized.add(null);
     await _auth.signOut();
     initialize();
   }
 
   void addFavorite(AudioSet audioSet) {
-    _service.addFavorite(userId: user.id, audioSet: audioSet);
+    _service.addFavorite(userId: loggedInUser.uid, audioSet: audioSet);
   }
 
   void removeFavorite(AudioSet audioSet) {
-    _service.removeFavorite(userId: user.id, audioSetId: audioSet.id);
+    _service.removeFavorite(userId: loggedInUser.uid, audioSetId: audioSet.id);
   }
 
   Stream isFavoriteStream(AudioSet audioSet) {
-    return _service.isFavoriteStream(userId: user.id, audioSet: audioSet);
+    return _service.isFavoriteStream(userId: loggedInUser.uid, audioSet: audioSet);
   }
 
   Stream<List<AudioSet>> favoritesStream() {
-    final stream = _service.favoritesStream(userId: user.id);
+    final stream = _service.favoritesStream(userId: loggedInUser.uid);
     return stream.map<List<AudioSet>>((s) => parseFavos(s));
   }
 

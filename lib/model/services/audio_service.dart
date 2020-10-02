@@ -8,9 +8,4 @@ class AudioService extends FirebaseService {
     final all = await getAll();
     return all.map((e) => AudioSet.fromJson(e.data, e.id)).toList();
   }
-
-  Stream<List<AudioSet>> fetchSetsStream() {
-    final all = getAllStream();
-    return all.map((s) => s.map((e) => AudioSet.fromJson(e.data, e.id)).toList());
-  }
 }

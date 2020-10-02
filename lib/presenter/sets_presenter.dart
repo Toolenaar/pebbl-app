@@ -51,17 +51,15 @@ class SetsPresenter with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  fetchSets() {
-    setsSubscription = _service.fetchSetsStream().listen((sets) async {
-      loadedSets = sets;
-      //for each set pair a category
-      attachCategory(loadedSets);
-      //categories grouped
-      setCategories = GroupedByCategory.fromAudioSetList(sets);
-      isInitialized = setCategories.length > 0;
-      notifyListeners();
-      //await _loadDownloadedSets();
-    });
+  fetchSets() async {
+    var sets = await _service.fetchSets();
+    loadedSets = sets;
+    //for each set pair a category
+    attachCategory(loadedSets);
+    //categories grouped
+    setCategories = GroupedByCategory.fromAudioSetList(sets);
+    isInitialized = setCategories.length > 0;
+    notifyListeners();
   }
 
   attachCategory(List<AudioSet> sets) {

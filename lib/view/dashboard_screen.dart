@@ -25,13 +25,14 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _activeIndex = -1;
   SetsPresenter _setsPresenter;
-  bool _showTour = false;
-
+  bool _showTour = true;
+  AudioController _audioController;
   @override
   void initState() {
     super.initState();
     context.read<LocalNotificationHelper>().initLocalNotifications(context);
-    context.read<AudioController>().init();
+    _audioController = context.read<AudioController>();
+    _audioController.init();
     _setsPresenter = context.read<SetsPresenter>();
     _setsPresenter.init();
     context.read<TimerPresenter>().init();
@@ -39,7 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _loadSettings() async {
-    _showTour = await LocalStorage.getbool(LocalStorage.TOUR_KEY) ?? true;
+    //_showTour = await LocalStorage.getbool(LocalStorage.TOUR_KEY) ?? true;
   }
 
   @override
@@ -69,27 +70,46 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  void _close() {
+    setState(() {
+      _activeIndex = -1;
+    });
+  }
+
   Widget _viewForIndex() {
-    if (_activeIndex == -1) {
-      return AudioView();
-    }
-    if (_activeIndex == 1) {
-      return TimerView();
-    }
-    if (_activeIndex == 0) {
-      return SetsList(
-        onCategorySelected: _newCategorySelected,
-        close: () {
-          setState(() {
-            _activeIndex = -1;
-          });
-        },
-      );
-    }
-    if (_activeIndex == 2) {
-      return FavoritesPage();
-    }
-    return SizedBox();
+    return Stack(
+      children: [
+        Offstage(offstage: _activeIndex != -1, child: AudioView()),
+        Offstage(offstage: _activeIndex != 1, child: TimerView(onCloseTap: _close)),
+        Offstage(
+            offstage: _activeIndex != 0,
+            child: SetsList(
+              onCategorySelected: _newCategorySelected,
+              close: _close,
+            )),
+        Offstage(offstage: _activeIndex != 2, child: FavoritesPage())
+      ],
+    );
+  }
+
+  Widget _buildAnimationView() {
+    return StreamBuilder<AudioSet>(
+      stream: _audioController.activeTrackStream,
+      initialData: null,
+      builder: (BuildContext context, AsyncSnapshot<AudioSet> snapshot) {
+        if (snapshot.data == null)
+          return Positioned.fill(
+            child: Container(),
+          );
+        return Positioned.fill(
+          child: AnimationView(
+            animationFile: snapshot.data?.animationFileName == null
+                ? 'assets/animations/study_data.json'
+                : snapshot.data?.animationFileName,
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -103,12 +123,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ? const SizedBox()
           : Stack(
               children: [
-                if (_setsPresenter.activeCategory != null)
-                  Positioned.fill(
-                    child: AnimationView(
-                      animationFile: _setsPresenter.activeCategory.animationFileName,
-                    ),
-                  ),
+                _buildAnimationView(),
                 Positioned.fill(
                   child: SafeArea(
                     child: Padding(

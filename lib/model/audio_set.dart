@@ -41,7 +41,9 @@ class AudioSet {
   final String fileName;
   final String image;
   final String trackUrl;
+  final String animationFileName;
   String playbackUrl;
+
   // DownloadedSet downloadedSet;
 
   AudioSetStatus get status {
@@ -60,6 +62,7 @@ class AudioSet {
       this.playbackUrl,
       this.name,
       this.fileName,
+      this.animationFileName,
       this.id,
       this.image});
 
@@ -75,6 +78,7 @@ class AudioSet {
       name: data['name'],
       duration: data['duration'],
       trackUrl: data['trackUrl'],
+      animationFileName: data['animationFileName'],
       artist: Artist.fromJson(data['artist']),
       categoryId: data['categoryId'],
       stems: data['stems'] == null
@@ -94,6 +98,7 @@ class AudioSet {
       'categoryId': categoryId,
       'name': name,
       'duration': duration,
+      'animationFileName': animationFileName,
       'artist': artist.toJson(),
       'trackUrl': trackUrl
     };
@@ -111,6 +116,7 @@ class AudioSet {
         // downloadedSet: downloadedSet?.copyWith() ?? null,
         fileName: fileName,
         trackUrl: trackUrl,
+        animationFileName: animationFileName,
         duration: duration,
         image: image,
         playbackUrl: this.playbackUrl,

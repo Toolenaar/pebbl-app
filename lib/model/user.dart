@@ -1,11 +1,11 @@
-class User {
+class AppUser {
   final String id;
   final String email;
   final String username;
 
-  User({this.id, this.email, this.username});
+  AppUser({this.id, this.email, this.username});
 
-  User.fromJson(Map json, String id)
+  AppUser.fromJson(Map json, String id)
       : id = id,
         username = json['username'],
         email = json['email'];

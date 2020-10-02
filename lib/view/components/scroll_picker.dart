@@ -86,14 +86,16 @@ class _ScrollPickerState extends State<ScrollPicker> {
                 physics: FixedExtentScrollPhysics(),
               ),
             ),
-            Center(child: Divider()),
+            // Center(child: Divider()),
             Center(
-              child: Container(
-                height: itemHeight,
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(color: colorTheme.accentColor, width: 1.0),
-                    bottom: BorderSide(color: colorTheme.accentColor, width: 1.0),
+              child: IgnorePointer(
+                child: Container(
+                  height: itemHeight,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: colorTheme.accentColor, width: 1.0),
+                      bottom: BorderSide(color: colorTheme.accentColor, width: 1.0),
+                    ),
                   ),
                 ),
               ),

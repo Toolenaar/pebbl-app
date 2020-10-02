@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class WhereQueryField {
   final String field;
@@ -24,60 +25,61 @@ class FirebaseResult {
 }
 
 class FirebaseService {
-  Firestore firestore = new Firestore();
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   final String collectionName;
   CollectionReference get ref => firestore.collection(collectionName);
 
   FirebaseService(this.collectionName) {
-    firestore = new Firestore();
-    firestore.settings(persistenceEnabled: true);
+    firestore.settings = Settings(persistenceEnabled: true);
   }
 
   Future delete(String id) async {
-    await ref.document(id).delete();
+    await ref.doc(id).delete();
   }
 
   Future<String> create(Map data, {String subCollection, String docId}) async {
-    var doc = ref.document(docId);
+    var doc = ref.doc(docId);
     if (subCollection != null) {
-      await doc.collection(subCollection).document().setData(data);
+      await doc.collection(subCollection).doc().set(data);
     }
-    await doc.setData(data);
-    return doc.documentID;
+    await doc.set(data);
+    return doc.id;
   }
 
   Future createOrUpdate(Map data, String id) async {
-    await ref.document(id).setData(data, merge: true);
+    await ref.doc(id).set(data, SetOptions(merge: true));
   }
 
-  Future update(Map<String,dynamic> data, String id) async {
-    await ref.document(id).updateData(data);
+  Future update(Map<String, dynamic> data, String id) async {
+    await ref.doc(id).update(data);
   }
 
   Future<FirebaseResult> getById(String id) async {
-    var doc = await ref.document(id).get();
+    var doc = await ref.doc(id).get();
 
     if (!doc.exists) return null;
-    return FirebaseResult(id: doc.documentID, data: doc.data, snapshot: doc);
+    return FirebaseResult(id: doc.id, data: doc.data(), snapshot: doc);
   }
 
   Stream<FirebaseResult> getByIdStream(String id) {
-    var doc = ref.document(id).snapshots();
-    return doc.map((d) => FirebaseResult(id: d.documentID, data: d.data, snapshot: d));
+    var doc = ref.doc(id).snapshots();
+    return doc.map((d) => FirebaseResult(id: d.id, data: d.data(), snapshot: d));
   }
 
   Stream<List<FirebaseResult>> getAllStream() {
     var stream = ref.snapshots();
-    return stream.map<List<FirebaseResult>>((s) => parse(s));
+    return stream.map<List<FirebaseResult>>((s) {
+      return parse(s);
+    });
   }
 
   Future<List<FirebaseResult>> getAll() async {
-    return parse(await ref.getDocuments());
+    return parse(await ref.get());
   }
 
   Future<List<FirebaseResult>> getWithWhereQuery(List<WhereQueryField> fields) async {
     //await _ref
-    var items = await WhereQueryField.toQuery(fields, ref).getDocuments();
+    var items = await WhereQueryField.toQuery(fields, ref).get();
     return parse(items);
   }
 
@@ -88,8 +90,7 @@ class FirebaseService {
   }
 
   List<FirebaseResult> parse(QuerySnapshot docs) {
-    if (docs.documents.isEmpty) return null;
-    return List<FirebaseResult>.from(
-        docs.documents.map((d) => FirebaseResult(id: d.documentID, data: d.data, snapshot: d)));
+    if (docs.docs.isEmpty) return null;
+    return List<FirebaseResult>.from(docs.docs.map((d) => FirebaseResult(id: d.id, data: d.data(), snapshot: d)));
   }
 }

@@ -10,7 +10,8 @@ import 'package:pebbl/view/home/timer/active_timer_view.dart';
 import 'package:provider/provider.dart';
 
 class TimerView extends StatefulWidget {
-  const TimerView({Key key}) : super(key: key);
+  final Function onCloseTap;
+  const TimerView({Key key, this.onCloseTap}) : super(key: key);
 
   @override
   _TimerViewState createState() => _TimerViewState();
@@ -40,46 +41,46 @@ class _TimerViewState extends State<TimerView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.transparent,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: _timerData != null
-          ? ActiveTimerView(
+    final activeTimer = Provider.of<TimerPresenter>(context, listen: false).activeTimer;
+    return _timerData != null
+        ? Expanded(
+            child: ActiveTimerView(
+              onCloseTap: widget.onCloseTap,
               onReset: () {
                 setState(() {
                   _timerData = null;
                 });
               },
               timerData: _timerData,
-            )
-          : TimerSetupView(
-              mode: _mode,
-              modeChanged: (mode) {
-                setState(() {
-                  _mode = mode;
-                });
-              },
-              initialBreakTimeValue: _selectedBreakTime,
-              initialWorkTimeValue: _selectedWorkTime,
-              initialTimeValue: _selectedWorkTime,
-              setTime: _setTimer,
-              breakTimePicked: (breakTime) {
-                setState(() {
-                  _selectedBreakTime = breakTime;
-                });
-              },
-              workTimePicked: (workTime) {
-                setState(() {
-                  _selectedWorkTime = workTime;
-                });
-              },
-              timePicked: (value) {
-                setState(() {
-                  _selectedWorkTime = value;
-                });
-              },
             ),
-    );
+          )
+        : TimerSetupView(
+            mode: _mode,
+            modeChanged: (mode) {
+              setState(() {
+                _mode = mode;
+              });
+            },
+            initialBreakTimeValue: _selectedBreakTime,
+            initialWorkTimeValue: _selectedWorkTime,
+            initialTimeValue: _selectedWorkTime,
+            setTime: _setTimer,
+            breakTimePicked: (breakTime) {
+              setState(() {
+                _selectedBreakTime = breakTime;
+              });
+            },
+            workTimePicked: (workTime) {
+              setState(() {
+                _selectedWorkTime = workTime;
+              });
+            },
+            timePicked: (value) {
+              setState(() {
+                _selectedWorkTime = value;
+              });
+            },
+          );
   }
 }
 
@@ -113,32 +114,34 @@ class TimerSetupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorTheme = AppColors.getActiveColorTheme(context);
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        TimerModeToggle(selectedMode: mode, onModeChanged: modeChanged),
-        const SizedBox(height: 16),
-        if (mode == 'timer')
-          NormalTimerSelector(
-              minutes: [Minute(1), Minute(5), Minute(10), Minute(30), Minute(60)],
-              initialValue: initialTimeValue,
-              timePicked: timePicked),
-        if (mode == 'pomodoro')
-          PomodoroTimerSelector(
-            workMinutes: [Minute(1), Minute(5), Minute(10), Minute(30), Minute(60)],
-            breakMinutes: [Minute(1), Minute(5), Minute(10), Minute(15), Minute(20)],
-            breakTimePicked: breakTimePicked,
-            workTimePicked: workTimePicked,
-            initialBreakTimeValue: initialBreakTimeValue,
-            initialWorkTimeValue: initialWorkTimeValue,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TimerModeToggle(selectedMode: mode, onModeChanged: modeChanged),
+          const SizedBox(height: 16),
+          if (mode == 'timer')
+            NormalTimerSelector(
+                minutes: [Minute(1), Minute(5), Minute(10), Minute(30), Minute(60)],
+                initialValue: initialTimeValue,
+                timePicked: timePicked),
+          if (mode == 'pomodoro')
+            PomodoroTimerSelector(
+              workMinutes: [Minute(1), Minute(5), Minute(10), Minute(30), Minute(60)],
+              breakMinutes: [Minute(1), Minute(5), Minute(10), Minute(15), Minute(20)],
+              breakTimePicked: breakTimePicked,
+              workTimePicked: workTimePicked,
+              initialBreakTimeValue: initialBreakTimeValue,
+              initialWorkTimeValue: initialWorkTimeValue,
+            ),
+          const SizedBox(
+            height: 16,
           ),
-        const SizedBox(
-          height: 16,
-        ),
-        ThemedPebbleButton(title: 'Set timer', categoryTheme: colorTheme, onTap: setTime)
-      ],
+          ThemedPebbleButton(title: 'Set timer', categoryTheme: colorTheme, onTap: setTime)
+        ],
+      ),
     );
   }
 }

@@ -168,17 +168,17 @@ class TrackListItem extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: <Widget>[
-            // SizedBox(
-            //   height: 16,
-            //   width: 16,
-            //   child: isActive
-            //       ? Image.asset(
-            //           'assets/img/ic_active_indicator.png',
-            //           color: colorTheme.accentColor,
-            //         )
-            //       : SizedBox(),
-            // ),
-            // const SizedBox(width: 16),
+            SizedBox(
+              height: 16,
+              width: 16,
+              child: isActive
+                  ? Image.asset(
+                      'assets/img/ic_active_indicator.png',
+                      color: colorTheme.accentColor,
+                    )
+                  : SizedBox(),
+            ),
+            const SizedBox(width: 16),
             Expanded(
               child: BodyText2(
                 '${audioSet.artist.name} - ${audioSet.name}',

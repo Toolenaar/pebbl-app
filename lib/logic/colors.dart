@@ -37,15 +37,17 @@ class AppColorsController {
   ValueStream<CategoryColorTheme> get activeColorThemeStream => activeColorThemeSubject.stream;
 
   bool initialized = false;
+  bool nightModeActive = true;
 
   Future init(BuildContext context) async {
     final dayId = await LocalStorage.getString(LocalStorage.DAY_THEME_KEY);
+    nightModeActive = await LocalStorage.getbool(LocalStorage.NIGHTMODE_ENABLED) ?? true;
     if (dayId != null) {
       activeDayColorTheme = ColorThemes.dayThemes.firstWhere((e) => e.id == dayId);
     }
     if (activeDayColorTheme == null) activeDayColorTheme = AppColorsController.defaultDayColorTheme;
 
-    final nightId = await LocalStorage.getString(LocalStorage.NIGHT_THEME_KEY);
+    final nightId = 'n1'; //await LocalStorage.getString(LocalStorage.NIGHT_THEME_KEY);
     if (nightId != null) {
       activeNightColorTheme = ColorThemes.nightThemes.firstWhere((e) => e.id == nightId);
     }
@@ -62,7 +64,7 @@ class AppColorsController {
   }
 
   bool isNight() {
-    return DateTime.now().hour > 17;
+    return nightModeActive && DateTime.now().hour > 17;
   }
 
   void setActiveDayColor(CategoryColorTheme theme) {
@@ -80,6 +82,7 @@ class ColorThemes {
   static List<CategoryColorTheme> dayThemes = [
     CategoryColorTheme(
       id: 'd1',
+      name: 'Bubblegum',
       backgroundColor: Color(0xFFFFB19A),
       accentColor: Color(0xFFFF3636),
       highlightColor: Color(0xFFF9C4B5),
@@ -87,6 +90,7 @@ class ColorThemes {
     ),
     CategoryColorTheme(
       id: 'd2',
+      name: 'Nocturne',
       backgroundColor: Color(0xFF252C26),
       accentColor: Color(0xFF707070),
       highlightColor: Color(0xFF353835),
@@ -94,10 +98,27 @@ class ColorThemes {
     ),
     CategoryColorTheme(
       id: 'd3',
+      name: 'Sunrays',
       backgroundColor: Color(0xFFE4B42F),
       accentColor: Color(0xFFFFFFFF),
       highlightColor: Color(0xFFE8C35C),
       selectionColor: Color(0xFFE8C35C),
+    ),
+    CategoryColorTheme(
+      id: 'd4',
+      name: 'Deep Ocean',
+      backgroundColor: Color(0xFF3E5771),
+      accentColor: Color(0xFF3A3E43),
+      highlightColor: Color(0xFF424D58),
+      selectionColor: Color(0xFF424D58),
+    ),
+    CategoryColorTheme(
+      id: 'd5',
+      name: 'Forest',
+      backgroundColor: Color(0xFF252C26),
+      accentColor: Color(0xFF658E6C),
+      highlightColor: Color(0xFF3E5342),
+      selectionColor: Color(0xFF353835),
     )
   ];
   static List<CategoryColorTheme> nightThemes = [
@@ -108,12 +129,5 @@ class ColorThemes {
       highlightColor: Color(0xFF353835),
       selectionColor: Color(0xFF353835),
     ),
-    CategoryColorTheme(
-      id: 'n2',
-      backgroundColor: Color(0xFF3E5771),
-      accentColor: Color(0xFF3A3E43),
-      highlightColor: Color(0xFF424D58),
-      selectionColor: Color(0xFF424D58),
-    )
   ];
 }

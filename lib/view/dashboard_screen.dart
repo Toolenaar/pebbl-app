@@ -25,7 +25,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _activeIndex = -1;
   SetsPresenter _setsPresenter;
-  bool _showTour = true;
+  bool _showTour = false;
   AudioController _audioController;
   @override
   void initState() {
@@ -40,7 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _loadSettings() async {
-    //_showTour = await LocalStorage.getbool(LocalStorage.TOUR_KEY) ?? true;
+    _showTour = await LocalStorage.getbool(LocalStorage.TOUR_KEY) ?? true;
   }
 
   @override

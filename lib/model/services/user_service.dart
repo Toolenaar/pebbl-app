@@ -13,8 +13,9 @@ class UserService extends FirebaseService {
     await ref.doc(userId).collection('favorites').doc(audioSetId).delete();
   }
 
-  Stream isFavoriteStream({@required String userId, @required AudioSet audioSet}) {
-    return ref.doc(userId).collection('favorites').doc(audioSet.id).snapshots();
+  Future<List<FirebaseResult>> favorites({String userId}) async {
+    final result = await ref.doc(userId).collection('favorites').get();
+    return parse(result);
   }
 
   Stream<List<FirebaseResult>> favoritesStream({String userId}) {

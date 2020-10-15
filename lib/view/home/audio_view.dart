@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/audio/audio_controller.dart';
-import 'package:pebbl/logic/colors.dart';
-import 'package:pebbl/logic/texts.dart';
+
 import 'package:pebbl/view/home/audio/audio_player_view.dart';
 import 'package:provider/provider.dart';
 

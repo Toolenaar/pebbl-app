@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
+import 'package:pebbl/logic/navigation_helper.dart';
+import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/model/services/audio_service.dart';
 import 'package:pebbl/model/services/firebase_service.dart';
 import 'package:pebbl/model/services/user_service.dart';
 import 'package:pebbl/model/user.dart';
+import 'package:pebbl/view/registration/login_start_screen.dart';
 import 'package:rxdart/rxdart.dart';
 
 class UserPresenter {
@@ -18,7 +21,12 @@ class UserPresenter {
   AppColors appColors;
 
   final BehaviorSubject<bool> isInitialized = BehaviorSubject.seeded(null);
+
+  StreamSubscription<List<FirebaseResult>> _favoSub;
   ValueStream<bool> get initializationStream => isInitialized.stream;
+
+  final BehaviorSubject<List<AudioSet>> favoritesSubject = BehaviorSubject.seeded(null);
+  ValueStream<List<AudioSet>> get favoritesStream => favoritesSubject.stream;
 
   StreamSubscription<User> _loginSub;
 
@@ -34,9 +42,22 @@ class UserPresenter {
         }
 
         user = await fetchUser(loggedInUser.uid);
+        setupFavoritesStream();
       }
 
       isInitialized.add(true);
+    });
+  }
+
+  void setupFavoritesStream() {
+    _favoSub = _service.favoritesStream(userId: loggedInUser.uid).listen((favorites) {
+      if (favorites != null) {
+        favoritesSubject.add(favorites.map((e) {
+          return AudioSet.fromJson(e.data, e.id);
+        }).toList());
+      } else {
+        favoritesSubject.add([]);
+      }
     });
   }
 
@@ -77,31 +98,56 @@ class UserPresenter {
     }
   }
 
+  Future<String> signUpAnonymously() async {
+    try {
+      var authResult = await _auth.signInAnonymously();
+      loggedInUser = authResult.user;
+      user = AppUser(username: 'anonymous', id: loggedInUser.uid);
+
+      var result = await _service.create(user.toJson(), docId: loggedInUser.uid);
+
+      return result;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
   Future signOut(BuildContext context) async {
     user = null;
     loggedInUser = null;
+    await LocalStorage.setBool(LocalStorage.TOUR_KEY, true);
     _loginSub.cancel();
     _loginSub = null;
+    _favoSub = null;
     isInitialized.add(null);
     await _auth.signOut();
+    NavigationHelper.navigateAndRemove(context, LoginStartScreen(), 'LoginStartScreen');
     initialize();
   }
 
   void addFavorite(AudioSet audioSet) {
+    favoritesSubject.add(favoritesSubject.value..add(audioSet));
     _service.addFavorite(userId: loggedInUser.uid, audioSet: audioSet);
   }
 
   void removeFavorite(AudioSet audioSet) {
+    var items = favoritesSubject.value;
+    var contains = items.where((e) => e.id == audioSet.id).isNotEmpty;
+    if (contains) {
+      items.removeWhere((e) => e.id == audioSet.id);
+    }
+    favoritesSubject.add(items);
     _service.removeFavorite(userId: loggedInUser.uid, audioSetId: audioSet.id);
   }
 
-  Stream isFavoriteStream(AudioSet audioSet) {
-    return _service.isFavoriteStream(userId: loggedInUser.uid, audioSet: audioSet);
-  }
-
-  Stream<List<AudioSet>> favoritesStream() {
-    final stream = _service.favoritesStream(userId: loggedInUser.uid);
-    return stream.map<List<AudioSet>>((s) => parseFavos(s));
+  Future<List<AudioSet>> favorites() async {
+    final results = await _service.favorites(userId: loggedInUser.uid);
+    try {
+      return parseFavos(results);
+    } catch (e) {
+      print(e);
+    }
   }
 
   List<AudioSet> parseFavos(List<FirebaseResult> docs) {

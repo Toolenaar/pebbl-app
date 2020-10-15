@@ -10,7 +10,7 @@
           <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="pebbl"
+        android:label="pom-fi"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

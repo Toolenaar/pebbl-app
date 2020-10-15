@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:pebbl/logic/audio/audio_controller.dart';
-import 'package:pebbl/logic/audio/audio_manager.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/audio_set.dart';
-import 'package:pebbl/model/category.dart';
+
 import 'package:pebbl/presenter/sets_presenter.dart';
-import 'package:pebbl/view/components/buttons/pebble_button.dart';
+
 import 'package:pebbl/view/components/sets/sets_list.dart';
 import 'package:pebbl/view/home/audio/audio_player_view.dart';
 import 'package:provider/provider.dart';
-import 'package:rxdart/rxdart.dart';
 
 // class TracksList extends StatefulWidget {
 //   final GroupedByCategory categoryGroup;

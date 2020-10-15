@@ -17,6 +17,7 @@ class LocalStorage {
   static const String AUTO_BREAK_TIMER_KEY = 'AUTO_BREAK_TIMER_KEY';
   static const String NIGHT_THEME_KEY = 'NIGHT_THEME_KEY';
   static const String DAY_THEME_KEY = 'DAY_THEME_KEY';
+  static const String NIGHTMODE_ENABLED = 'NIGHTMODE_ENABLED';
   static Future saveTimerData(TimerData data) async {
     if (data == null) {
       await setString('TIMER_DATA', null);

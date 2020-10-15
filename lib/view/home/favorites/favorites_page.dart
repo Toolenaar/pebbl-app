@@ -28,7 +28,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   void initState() {
     _audioController = context.read<AudioController>();
     _setsPresenter = context.read<SetsPresenter>();
-    _favoritesStream = context.read<UserPresenter>().favoritesStream();
+    _favoritesStream = context.read<UserPresenter>().favoritesStream;
     super.initState();
   }
 

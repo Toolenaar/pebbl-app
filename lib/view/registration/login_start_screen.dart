@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/navigation_helper.dart';
+import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/components/buttons/pebble_button.dart';
+import 'package:pebbl/view/components/modals/dialog_helper.dart';
+import 'package:pebbl/view/dashboard_screen.dart';
 import 'package:pebbl/view/registration/login_screen.dart';
 import 'package:pebbl/view/registration/registration_screen.dart';
+import 'package:provider/provider.dart';
 
 class LoginStartScreen extends StatelessWidget {
   const LoginStartScreen({Key key}) : super(key: key);
@@ -52,14 +56,23 @@ class LoginStartScreen extends StatelessWidget {
                 title: 'Sign-up',
                 onTap: () => NavigationHelper.navigate(context, RegistrationScreen(), 'RegistrationScreen'),
               ),
-              PebbleTextButton(
-                title: 'Use anonymously',
-                onTap: () {},
-              )
+              PebbleTextButton(title: 'Use anonymously', onTap: () => _signupAnonymously(context))
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _signupAnonymously(BuildContext context) async {
+    var id = await context.read<UserPresenter>().signUpAnonymously();
+    if (id == null) {
+      DialogHelper.showErrorDialog(
+          context: context,
+          title: 'Oops something went wrong',
+          error: 'Something went wrong trying to log you in anonymously. Please try again');
+    } else {
+      NavigationHelper.navigateAndRemove(context, DashboardScreen(), 'DashboardScreen');
+    }
   }
 }

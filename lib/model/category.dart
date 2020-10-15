@@ -7,10 +7,12 @@ class CategoryColorTheme {
   final Color highlightColor;
   final Color selectionColor;
   final String id;
+  final String name;
 
   Color get accentColor40 => accentColor.withOpacity(0.4);
 
-  CategoryColorTheme({this.accentColor, this.backgroundColor, this.highlightColor, this.selectionColor, this.id});
+  CategoryColorTheme(
+      {this.accentColor, this.backgroundColor, this.highlightColor, this.selectionColor, this.id, this.name});
 
   static CategoryColorTheme fromJson(Map json) {
     return CategoryColorTheme(

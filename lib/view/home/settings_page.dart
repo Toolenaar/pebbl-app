@@ -3,6 +3,9 @@ import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/category.dart';
+import 'package:pebbl/presenter/user_presenter.dart';
+import 'package:pebbl/view/components/text/version_nr_text.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage({Key key}) : super(key: key);
@@ -13,6 +16,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool _autoBreakTime;
+  bool _nightModeEnabled;
 
   @override
   void initState() {
@@ -22,6 +26,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   setSettings() async {
     _autoBreakTime = await LocalStorage.getbool(LocalStorage.AUTO_BREAK_TIMER_KEY) ?? false;
+    _nightModeEnabled = await LocalStorage.getbool(LocalStorage.NIGHTMODE_ENABLED) ?? false;
     setState(() {});
   }
 
@@ -34,6 +39,22 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: colorTheme.backgroundColor,
+        actions: [
+          GestureDetector(
+            onTap: () async {
+              await context.read<UserPresenter>().signOut(context);
+            },
+            child: Container(
+              padding: const EdgeInsets.only(right: 16),
+              color: Colors.transparent,
+              child: Center(
+                  child: BodyText1(
+                'LOG-OUT',
+                color: colorTheme.accentColor,
+              )),
+            ),
+          )
+        ],
         leading: IconButton(
           icon: Image.asset(
             'assets/img/ic_back.png',
@@ -50,58 +71,90 @@ class _SettingsPageState extends State<SettingsPage> {
           fontSize: 20,
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const SizedBox(
-            height: 8,
-          ),
-          _SettingRow(
-            description: 'Automatically start break timer after study session',
-            isSet: _autoBreakTime,
-            onToggle: (value) async {
-              await LocalStorage.setBool(LocalStorage.AUTO_BREAK_TIMER_KEY, value);
-              setState(() {
-                _autoBreakTime = value;
-              });
-            },
-          ),
-          // const SizedBox(
-          //   height: 24,
-          // ),
-          // _SettingRow(
-          //   description: 'Automatically initiate night mode after 19:00 pm',
-          //   isSet: _autoBreakTime,
-          //   onToggle: (value) async {
-          //     await LocalStorage.setBool(LocalStorage.AUTO_BREAK_TIMER_KEY, value);
-          //     setState(() {
-          //       _autoBreakTime = value;
-          //     });
-          //   },
-          // ),
-          const SizedBox(
-            height: 24,
-          ),
-          Divider(
-            height: 1,
-            color: colorTheme.accentColor,
-          ),
-          const SizedBox(
-            height: 24,
-          ),
-          BodyText1(
-            'Themes',
-            color: colorTheme.accentColor,
-            fontSize: 20,
-          ),
-          const SizedBox(
-            height: 24,
-          ),
-          ThemePicker(
-            dayThemeSelected: _saveDayTheme,
-            nightThemeSelected: _saveNightTheme,
-          )
-        ],
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  _SettingRow(
+                    description: 'Automatically start break timer after study session',
+                    isSet: _autoBreakTime,
+                    onToggle: (value) async {
+                      await LocalStorage.setBool(LocalStorage.AUTO_BREAK_TIMER_KEY, value);
+                      setState(() {
+                        _autoBreakTime = value;
+                      });
+                    },
+                  ),
+                  _SettingRow(
+                    description: 'Automatically initiate night mode after 19:00 pm',
+                    isSet: _nightModeEnabled,
+                    onToggle: (value) async {
+                      await LocalStorage.setBool(LocalStorage.NIGHTMODE_ENABLED, value);
+                      AppColors.of(context).controller.nightModeActive = value;
+                      setState(() {
+                        _nightModeEnabled = value;
+                      });
+                    },
+                  ),
+                  // const SizedBox(
+                  //   height: 24,
+                  // ),
+                  // _SettingRow(
+                  //   description: 'Automatically initiate night mode after 19:00 pm',
+                  //   isSet: _autoBreakTime,
+                  //   onToggle: (value) async {
+                  //     await LocalStorage.setBool(LocalStorage.AUTO_BREAK_TIMER_KEY, value);
+                  //     setState(() {
+                  //       _autoBreakTime = value;
+                  //     });
+                  //   },
+                  // ),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  Divider(
+                    height: 1,
+                    color: colorTheme.accentColor,
+                  ),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  BodyText1(
+                    'Themes',
+                    color: colorTheme.accentColor,
+                    fontSize: 20,
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  ThemePicker(
+                    dayThemeSelected: _saveDayTheme,
+                    nightThemeSelected: _saveNightTheme,
+                  )
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    child: BodyText1('TERMS OF SERVICE', color: colorTheme.accentColor),
+                  ),
+                  Spacer(),
+                  VersionNrText(color: colorTheme.accentColor)
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -135,7 +188,7 @@ class _SettingRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: BodyText1(
+            child: BodyText2(
               description,
               color: colorTheme.accentColor,
             ),
@@ -143,10 +196,11 @@ class _SettingRow extends StatelessWidget {
           const SizedBox(
             width: 16,
           ),
-          Switch.adaptive(
+          Switch(
               activeColor: colorTheme.accentColor,
               inactiveTrackColor: colorTheme.accentColor.withOpacity(0.2),
               value: isSet,
+              inactiveThumbColor: colorTheme.accentColor,
               onChanged: onToggle)
         ],
       ),
@@ -161,7 +215,6 @@ class ThemePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColors.of(context).activeColorTheme();
     return Container(
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
         Wrap(
@@ -178,25 +231,25 @@ class ThemePicker extends StatelessWidget {
         const SizedBox(
           height: 24,
         ),
-        BodyText1(
-          'NIGHTMODE THEMES',
-          color: colors.accentColor,
-          fontSize: 14,
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        Wrap(
-          spacing: 16,
-          runSpacing: 16,
-          children: ColorThemes.nightThemes
-              .map((e) => ColorCircle(
-                    theme: e,
-                    isSelected: AppColors.of(context).controller.activeNightColorTheme.id == e.id,
-                    onTap: () => nightThemeSelected(e),
-                  ))
-              .toList(),
-        )
+        // BodyText1(
+        //   'NIGHTMODE THEMES',
+        //   color: colors.accentColor,
+        //   fontSize: 14,
+        // ),
+        // const SizedBox(
+        //   height: 16,
+        // ),
+        // Wrap(
+        //   spacing: 16,
+        //   runSpacing: 16,
+        //   children: ColorThemes.nightThemes
+        //       .map((e) => ColorCircle(
+        //             theme: e,
+        //             isSelected: AppColors.of(context).controller.activeNightColorTheme.id == e.id,
+        //             onTap: () => nightThemeSelected(e),
+        //           ))
+        //       .toList(),
+        // )
       ]),
     );
   }
@@ -210,47 +263,66 @@ class ColorCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context).activeColorTheme();
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(48),
-            color: theme.backgroundColor,
-            border: Border.all(color: theme.accentColor)),
-        child: Stack(
-          overflow: Overflow.visible,
-          children: [
-            RotatedBox(
-              quarterTurns: 1,
-              child: ClipPath(
-                clipper: CustomHalfCircleClipper(),
-                child: Container(
-                  height: MediaQuery.of(context).size.width,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: theme.highlightColor,
+        padding: const EdgeInsets.all(16),
+        width: 96,
+        decoration: isSelected ? BoxDecoration(border: Border.all(color: theme.accentColor)) : null,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(48),
-                  ),
+                    color: theme.backgroundColor,
+                    border: Border.all(color: theme.accentColor)),
+                child: Stack(
+                  overflow: Overflow.visible,
+                  children: [
+                    RotatedBox(
+                      quarterTurns: 1,
+                      child: ClipPath(
+                        clipper: CustomHalfCircleClipper(),
+                        child: Container(
+                          height: MediaQuery.of(context).size.width,
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            color: theme.highlightColor,
+                            borderRadius: BorderRadius.circular(48),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (isSelected)
+                      Positioned(
+                        right: -5,
+                        top: 8,
+                        child: Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: theme.accentColor),
+                              color: theme.backgroundColor,
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Icon(Icons.check, size: 14, color: theme.accentColor),
+                        ),
+                      )
+                  ],
                 ),
               ),
-            ),
-            if (isSelected)
-              Positioned(
-                right: -5,
-                top: 8,
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: theme.accentColor),
-                      color: theme.backgroundColor,
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Icon(Icons.check, size: 14, color: theme.accentColor),
-                ),
+              const SizedBox(height: 8),
+              BodyText1(
+                theme.name.toUpperCase(),
+                fontSize: 10,
+                color: colors.accentColor,
               )
-          ],
+            ],
+          ),
         ),
       ),
     );

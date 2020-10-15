@@ -99,6 +99,7 @@ class TrackInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorTheme = AppColors.of(context).activeColorTheme();
     return Row(
       children: <Widget>[
         Expanded(
@@ -109,18 +110,18 @@ class TrackInfo extends StatelessWidget {
               H1Text(
                 audioSet.name,
                 fontSize: 20,
-                color: audioSet.category.colorTheme.accentColor,
+                color: colorTheme.accentColor,
               ),
               BodyText1(
                 audioSet.artist.name,
-                color: audioSet.category.colorTheme.accentColor,
+                color: colorTheme.accentColor,
               ),
             ],
           ),
         ),
         ToggleFavoriteButton(
           audioSet: audioSet,
-          color: audioSet.category.colorTheme.accentColor,
+          color: colorTheme.accentColor,
         )
       ],
     );
@@ -139,15 +140,20 @@ class ToggleFavoriteButton extends StatefulWidget {
 }
 
 class _ToggleFavoriteButtonState extends State<ToggleFavoriteButton> {
-  Stream _favoriteStream;
   bool _isFavorite;
   UserPresenter userPresenter;
 
   @override
   void initState() {
     userPresenter = context.read<UserPresenter>();
-    _favoriteStream = userPresenter.isFavoriteStream(widget.audioSet);
+
+    _get();
     super.initState();
+  }
+
+  void _get() async {
+    var result = await context.read<UserPresenter>().favorites();
+    print(result);
   }
 
   void _onPressed() {
@@ -161,14 +167,14 @@ class _ToggleFavoriteButtonState extends State<ToggleFavoriteButton> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: _favoriteStream,
-      initialData: 'start',
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.data == 'start') return SizedBox();
-        _isFavorite = snapshot.data.data != null;
+      stream: userPresenter.favoritesStream,
+      builder: (BuildContext context, AsyncSnapshot<List<AudioSet>> snapshot) {
+        _isFavorite = snapshot.data != null && snapshot.data.where((e) => e.id == widget.audioSet.id).isNotEmpty;
         final icon = _isFavorite ? 'assets/img/ic_favo_filled.png' : 'assets/img/ic_favo_outline.png';
         return GestureDetector(
-          onTap: _onPressed,
+          onTap: () {
+            _onPressed();
+          },
           child: Container(
             padding: const EdgeInsets.all(8),
             color: Colors.transparent,

@@ -127,7 +127,9 @@ class UserPresenter {
   }
 
   void addFavorite(AudioSet audioSet) {
-    favoritesSubject.add(favoritesSubject.value..add(audioSet));
+    final favos = favoritesSubject.value ?? [];
+
+    favoritesSubject.add(favos..add(audioSet));
     _service.addFavorite(userId: loggedInUser.uid, audioSet: audioSet);
   }
 

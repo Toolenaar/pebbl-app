@@ -67,6 +67,7 @@ class _PebblAppState extends State<PebblApp> {
           Provider(create: (context) => _notificationHelper = LocalNotificationHelper())
         ],
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           theme: ThemeData(
             accentColor: _controller.activeColorTheme().accentColor,
             textTheme: GoogleFonts.karlaTextTheme(

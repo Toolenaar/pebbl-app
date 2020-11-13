@@ -124,6 +124,7 @@ class ColorThemes {
   static List<CategoryColorTheme> nightThemes = [
     CategoryColorTheme(
       id: 'n1',
+      name: 'Nocturne',
       backgroundColor: Color(0xFF252C26),
       accentColor: Color(0xFF707070),
       highlightColor: Color(0xFF353835),

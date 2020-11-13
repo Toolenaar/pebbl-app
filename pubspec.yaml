@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.0.1+9
+version: 0.1.0+12
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -28,7 +28,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
-  firebase_analytics: ^6.0.1
+  firebase_analytics: ^6.0.2
   firebase_core: ^0.5.0
   cloud_firestore: ^0.14.1+2
   firebase_storage: ^4.0.1
@@ -42,14 +42,14 @@ dependencies:
   just_audio: ^0.2.2
   audio_service: ^0.12.0
   intl: ^0.16.1
-  flutter_local_notifications: ^1.4.4+4
+  flutter_local_notifications: ^3.0.0
   lottie: ^0.6.0
   flutter_material_pickers: ^1.8.0
   package_info: ^0.4.3
   
 
 dev_dependencies:
-  flutter_launcher_icons: "^0.8.0"
+  flutter_launcher_icons: "^0.8.1"
   flutter_test:
     sdk: flutter
 
@@ -80,6 +80,12 @@ flutter:
     - assets/img/ic_favo_outline.png
     - assets/animations/sleep_data.json
     - assets/animations/study_data.json
+    - assets/animations/study_data_d1.json
+    - assets/animations/study_data_d2.json
+    - assets/animations/study_data_d3.json
+    - assets/animations/study_data_d4.json
+    - assets/animations/study_data_d5.json
+    - assets/animations/study_data_n1.json
     - assets/img/ic_play.png
     - assets/img/ic_pause.png
     - assets/img/ic_settings.png

@@ -12,14 +12,17 @@ class LocalNotificationHelper {
   Future sendNotification(String title, String body, {Duration scheduleFromNow}) async {
     final androidPlatformChannelSpecifics = AndroidNotificationDetails(
         'pebbl', 'Pebbl timer', 'Notifications for the pebbl pomodoro timer!',
-        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
+        importance: Importance.max, priority: Priority.high, ticker: 'ticker');
     final iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    final platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    final platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
 
     if (scheduleFromNow != null) {
-      final scheduledNotificationDateTime = DateTime.now().add(scheduleFromNow);
-      await flutterLocalNotificationsPlugin.schedule(
-          0, title, body, scheduledNotificationDateTime, platformChannelSpecifics);
+      final scheduledNotificationDateTime = DateTime.now().toUtc().add(scheduleFromNow);
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+          0, title, body, scheduledNotificationDateTime, platformChannelSpecifics,
+          androidAllowWhileIdle: true,
+          uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime);
     } else {
       await flutterLocalNotificationsPlugin.show(0, title, body, platformChannelSpecifics);
     }
@@ -35,7 +38,8 @@ class LocalNotificationHelper {
     final initializationSettingsAndroid = AndroidInitializationSettings('ic_launcher');
     final initializationSettingsIOS =
         IOSInitializationSettings(onDidReceiveLocalNotification: onDidReceiveLocalNotification);
-    final initializationSettings = InitializationSettings(initializationSettingsAndroid, initializationSettingsIOS);
+    final initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: selectNotification);
   }
 

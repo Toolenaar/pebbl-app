@@ -202,7 +202,10 @@ class PlayerControls extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(icon),
+          Image.asset(
+            icon,
+            color: colorTheme.accentColor,
+          ),
           const SizedBox(height: 8),
           BodyText2(
             controller.isPlaying ? '' : 'MUSIC PAUSED',

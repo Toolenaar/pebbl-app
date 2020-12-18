@@ -86,7 +86,7 @@ class _ActiveTimerViewState extends State<ActiveTimerView> {
   }
 
   String _stopText() {
-    var stopText = 'stop';
+    var stopText = 'Stop Timer';
     if (_timerData.endTime != null && (_timerData.endTime.isBefore(DateTime.now()))) {
       stopText = 'Start new timer';
     }

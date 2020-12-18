@@ -12,6 +12,7 @@ import 'package:pebbl/logic/local_notification_helper.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/dashboard_screen.dart';
+import 'package:pebbl/view/home_screen.dart';
 import 'package:pebbl/view/registration/login_start_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -79,7 +80,7 @@ class _PebblAppState extends State<PebblApp> {
           ],
           home: AudioServiceWidget(
             child: AppInitializer(
-              homePage: DashboardScreen(),
+              homePage: HomePage(),
               loginPage: LoginStartScreen(),
             ),
           ),

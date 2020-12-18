@@ -47,10 +47,6 @@ class LocalNotificationHelper {
     if (payload != null) {
       debugPrint('notification payload: ' + payload);
     }
-    // await Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => DashboardScreen()),
-    // );
   }
 
   Future onDidReceiveLocalNotification(int id, String title, String body, String payload) async {

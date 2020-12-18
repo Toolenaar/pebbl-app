@@ -9,6 +9,7 @@ import 'package:pebbl/view/components/modals/dialog_helper.dart';
 import 'package:pebbl/view/components/progress_view.dart';
 import 'package:pebbl/view/components/text/pebbl_form_field.dart';
 import 'package:pebbl/view/dashboard_screen.dart';
+import 'package:pebbl/view/home_screen.dart';
 import 'package:pebbl/view/registration/login_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -66,7 +67,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     var result = await presenter.signUpWithEmail(context, email: _email, password: _password, username: _username);
     if (result != null) {
-      NavigationHelper.navigateAndRemove(context, DashboardScreen(), 'DashboardScreen');
+      NavigationHelper.navigateAndRemove(context, HomePage(), 'HomePage');
     } else {
       DialogHelper.showErrorDialog(
           context: context,

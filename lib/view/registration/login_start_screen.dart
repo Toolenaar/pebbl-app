@@ -5,6 +5,7 @@ import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/components/buttons/pebble_button.dart';
 import 'package:pebbl/view/components/modals/dialog_helper.dart';
 import 'package:pebbl/view/dashboard_screen.dart';
+import 'package:pebbl/view/home_screen.dart';
 import 'package:pebbl/view/registration/login_screen.dart';
 import 'package:pebbl/view/registration/registration_screen.dart';
 import 'package:provider/provider.dart';
@@ -72,7 +73,7 @@ class LoginStartScreen extends StatelessWidget {
           title: 'Oops something went wrong',
           error: 'Something went wrong trying to log you in anonymously. Please try again');
     } else {
-      NavigationHelper.navigateAndRemove(context, DashboardScreen(), 'DashboardScreen');
+      NavigationHelper.navigateAndRemove(context, HomePage(), 'HomePage');
     }
   }
 }

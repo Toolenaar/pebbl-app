@@ -17,6 +17,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   bool _autoBreakTime;
   bool _nightModeEnabled;
+  bool _tourIsActive = false;
 
   @override
   void initState() {
@@ -27,6 +28,7 @@ class _SettingsPageState extends State<SettingsPage> {
   setSettings() async {
     _autoBreakTime = await LocalStorage.getbool(LocalStorage.AUTO_BREAK_TIMER_KEY) ?? false;
     _nightModeEnabled = await LocalStorage.getbool(LocalStorage.NIGHTMODE_ENABLED) ?? false;
+
     setState(() {});
   }
 
@@ -57,7 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
         leading: IconButton(
           icon: Image.asset(
-            'assets/img/ic_back.png',
+            'assets/img/ic_close.png',
             color: colorTheme.accentColor,
           ),
           onPressed: () {
@@ -103,6 +105,21 @@ class _SettingsPageState extends State<SettingsPage> {
                       });
                     },
                   ),
+
+                  if (!_tourIsActive) ...[
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    _SettingRow(
+                        description: 'Reset tutorial tour',
+                        onTap: () async {
+                          await LocalStorage.setBool(LocalStorage.TOUR_KEY, true);
+                          context.read<UserPresenter>().tutorialSettingSub.add(true);
+                          setState(() {
+                            _tourIsActive = true;
+                          });
+                        })
+                  ],
                   // const SizedBox(
                   //   height: 24,
                   // ),
@@ -178,31 +195,39 @@ class _SettingRow extends StatelessWidget {
   final String description;
   final bool isSet;
   final Function(bool) onToggle;
-  const _SettingRow({Key key, this.description = '', this.isSet = false, @required this.onToggle}) : super(key: key);
+  final Function onTap;
+  const _SettingRow({Key key, this.description = '', this.isSet = false, this.onToggle, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final colorTheme = AppColors.of(context).activeColorTheme();
-    return Container(
-      color: Colors.transparent,
-      child: Row(
-        children: [
-          Expanded(
-            child: BodyText2(
-              description,
-              color: colorTheme.accentColor,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.transparent,
+            border: onToggle == null ? Border.all(color: colorTheme.accentColor, width: 1) : null),
+        padding: EdgeInsets.symmetric(vertical: onToggle == null ? 8 : 0, horizontal: onToggle == null ? 8 : 0),
+        child: Row(
+          children: [
+            Expanded(
+              child: BodyText2(
+                description,
+                color: colorTheme.accentColor,
+              ),
             ),
-          ),
-          const SizedBox(
-            width: 16,
-          ),
-          Switch(
-              activeColor: colorTheme.accentColor,
-              inactiveTrackColor: colorTheme.accentColor.withOpacity(0.2),
-              value: isSet,
-              inactiveThumbColor: colorTheme.accentColor,
-              onChanged: onToggle)
-        ],
+            const SizedBox(
+              width: 16,
+            ),
+            if (onToggle != null)
+              Switch(
+                  activeColor: colorTheme.accentColor,
+                  inactiveTrackColor: colorTheme.accentColor.withOpacity(0.2),
+                  value: isSet,
+                  inactiveThumbColor: colorTheme.accentColor,
+                  onChanged: onToggle)
+          ],
+        ),
       ),
     );
   }

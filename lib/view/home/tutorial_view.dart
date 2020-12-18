@@ -34,21 +34,21 @@ class _TutorialViewState extends State<TutorialView> {
           const SizedBox(height: 16),
           if (_step == 0)
             _TutorialContent(
-              title: '1/3 How do you feel?',
-              subtitle: 'Pick a category. We have all kinds of flavours.',
+              title: '1/3 Pick a playlist that fits your mood',
+              subtitle: 'Need help studying? Can’t fall asleep? We got your back!',
             ),
           if (_step == 1)
             _TutorialContent(
               indicaterAlignment: Alignment.center,
-              title: '2/3 Set a timer',
-              subtitle: 'The default is set to infinite. Are you up for the task?',
+              title: '2/4 Set a (pomodoro) timer',
+              subtitle: 'Study for a bit, rest for a while. Use your time wisely.',
             ),
           if (_step == 2)
             _TutorialContent(
               indicaterAlignment: Alignment.centerRight,
               title: '3/3 Favorites',
               subtitle:
-                  'Like what you hear? Save your sound and re-visit it later. Try shuffle mode for a unique soundscape experience.',
+                  'Press the heart icon on the top right to save your favorite tunes. Use shuffle mode to mix it up!',
             ),
           // Align(
           //   alignment: Alignment.centerLeft,

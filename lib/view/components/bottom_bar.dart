@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/date_helper.dart';
 import 'package:pebbl/logic/texts.dart';
-import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/model/category.dart';
 import 'package:pebbl/model/timer_data.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
@@ -21,12 +20,13 @@ class BottomBar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Expanded(
-            flex: 1,
-            child: BottomBarItem(
-              child: ActiveSetBottomBarItem(isActive: activeIndex == 0),
-              textAlignment: Alignment.centerLeft,
-              onTap: () => onTabChanged(0),
-            )),
+          flex: 1,
+          child: BottomBarItem(
+            child: ActiveSetBottomBarItem(isActive: activeIndex == 0),
+            textAlignment: Alignment.centerLeft,
+            onTap: () => onTabChanged(0),
+          ),
+        ),
         Expanded(
           flex: 1,
           child: BottomBarItem(
@@ -66,7 +66,7 @@ class BottomBarItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         color: Colors.transparent,
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
         child: Align(
           alignment: textAlignment,
           child: child,

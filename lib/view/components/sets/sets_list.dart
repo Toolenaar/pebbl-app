@@ -3,6 +3,7 @@ import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/navigation_helper.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/audio_set.dart';
+import 'package:pebbl/model/category.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/view/home/settings_page.dart';
 
@@ -21,8 +22,7 @@ class _SetsListState extends State<SetsList> {
   GroupedByCategory _selectedCategory;
 
   Widget _buildSetsList() {
-    final colorTheme = AppColors.of(context).activeColorTheme();
-    var items = context.select<SetsPresenter, List<GroupedByCategory>>((value) => value.setCategories);
+    final items = context.select<SetsPresenter, List<GroupedByCategory>>((value) => value.setCategories);
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Container(
@@ -33,18 +33,26 @@ class _SetsListState extends State<SetsList> {
               );
             },
             itemBuilder: (context, index) {
-              if (index == 0) {
-                return Align(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
-                    icon: ImageIcon(
-                      AssetImage('assets/img/ic_settings.png'),
-                      color: colorTheme.accentColor,
-                    ),
-                    onPressed: () async {
-                      await NavigationHelper.navigate(context, SettingsPage(), 'SettingsPage');
-                      setState(() {});
-                    },
+              if (index == items.length) {
+                return Opacity(
+                  opacity: 0.3,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SetsListCategoryListItem(
+                        subtitle: 'Coming soon',
+                        onSetSelected: (categoryGroup) {},
+                        category: GroupedByCategory(category: Category(name: 'B:eats to study vol.1')),
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      SetsListCategoryListItem(
+                        subtitle: 'Coming soon',
+                        onSetSelected: (categoryGroup) {},
+                        category: GroupedByCategory(category: Category(name: 'B:eats for sleep vol.1')),
+                      ),
+                    ],
                   ),
                 );
               }
@@ -54,7 +62,7 @@ class _SetsListState extends State<SetsList> {
                   widget.onCategorySelected(categoryGroup);
                   setState(() {});
                 },
-                category: items[index - 1],
+                category: items[index],
               );
             },
             itemCount: items.length + 1),
@@ -79,8 +87,10 @@ class _SetsListState extends State<SetsList> {
 
 class SetsListCategoryListItem extends StatelessWidget {
   final GroupedByCategory category;
+  final String subtitle;
   final Function(GroupedByCategory) onSetSelected;
-  const SetsListCategoryListItem({Key key, this.category, @required this.onSetSelected}) : super(key: key);
+  const SetsListCategoryListItem({Key key, this.category, @required this.onSetSelected, this.subtitle})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -97,10 +107,23 @@ class SetsListCategoryListItem extends StatelessWidget {
             color: colorTheme.accentColor,
           ),
         ),
-        child: H1Text(
-          category.category.name,
-          color: colorTheme.accentColor,
-          fontSize: 28,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            H1Text(
+              category.category.name,
+              color: colorTheme.accentColor,
+              fontSize: 28,
+            ),
+            if (subtitle != null)
+              BodyText2(
+                subtitle,
+                color: colorTheme.accentColor,
+                fontStyle: FontStyle.italic,
+                fontSize: 14,
+              ),
+          ],
         ),
       ),
     );

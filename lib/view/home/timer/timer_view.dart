@@ -43,16 +43,14 @@ class _TimerViewState extends State<TimerView> {
   Widget build(BuildContext context) {
     final activeTimer = Provider.of<TimerPresenter>(context, listen: false).activeTimer;
     return _timerData != null
-        ? Expanded(
-            child: ActiveTimerView(
-              onCloseTap: widget.onCloseTap,
-              onReset: () {
-                setState(() {
-                  _timerData = null;
-                });
-              },
-              timerData: _timerData,
-            ),
+        ? ActiveTimerView(
+            onCloseTap: widget.onCloseTap,
+            onReset: () {
+              setState(() {
+                _timerData = null;
+              });
+            },
+            timerData: _timerData,
           )
         : TimerSetupView(
             mode: _mode,
@@ -98,6 +96,18 @@ class TimerSetupView extends StatelessWidget {
   final String mode;
   final Function(String) modeChanged;
 
+  static List<Minute> times = [
+    Minute(10),
+    Minute(20),
+    Minute(30),
+    Minute(45),
+    Minute(60),
+    Minute(90),
+    Minute(120),
+    Minute(180)
+  ];
+  static List<Minute> breakTimes = [Minute(5), Minute(10), Minute(15), Minute(20), Minute(30)];
+
   const TimerSetupView(
       {Key key,
       @required this.timePicked,
@@ -123,14 +133,11 @@ class TimerSetupView extends StatelessWidget {
           TimerModeToggle(selectedMode: mode, onModeChanged: modeChanged),
           const SizedBox(height: 16),
           if (mode == 'timer')
-            NormalTimerSelector(
-                minutes: [Minute(1), Minute(5), Minute(10), Minute(30), Minute(60)],
-                initialValue: initialTimeValue,
-                timePicked: timePicked),
+            NormalTimerSelector(minutes: times, initialValue: initialTimeValue, timePicked: timePicked),
           if (mode == 'pomodoro')
             PomodoroTimerSelector(
-              workMinutes: [Minute(1), Minute(5), Minute(10), Minute(30), Minute(60)],
-              breakMinutes: [Minute(1), Minute(5), Minute(10), Minute(15), Minute(20)],
+              workMinutes: times,
+              breakMinutes: breakTimes,
               breakTimePicked: breakTimePicked,
               workTimePicked: workTimePicked,
               initialBreakTimeValue: initialBreakTimeValue,

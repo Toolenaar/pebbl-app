@@ -1,8 +1,10 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/audio/audio_controller.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/audio_set.dart';
+import 'package:pebbl/model/category.dart';
 import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:provider/provider.dart';
 
@@ -16,10 +18,39 @@ class AudioPlayerView extends StatefulWidget {
 
 class _AudioPlayerState extends State<AudioPlayerView> {
   AudioController audioController;
+  bool _controlsFeedbackVisible = false;
+  String _helpText = 'PLAYING';
   @override
   void initState() {
     audioController = context.read<AudioController>();
     super.initState();
+  }
+
+  Widget _playerControls(CategoryColorTheme colorTheme) {
+    return AnimatedOpacity(
+      opacity: _controlsFeedbackVisible ? 1.0 : 0.0,
+      duration: Duration(milliseconds: _controlsFeedbackVisible ? 500 : 1000),
+      curve: Curves.easeInOut,
+      onEnd: () {
+        setState(() {
+          _controlsFeedbackVisible = false;
+        });
+      },
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            BodyText2(
+              _helpText,
+              fontSize: 24,
+              color: colorTheme.accentColor,
+              fontWeight: FontWeight.bold,
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -30,12 +61,6 @@ class _AudioPlayerState extends State<AudioPlayerView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 16, 0),
-            child: TrackInfo(
-              audioSet: widget.audioSet,
-            ),
-          ),
           Expanded(
             child: Center(
               child: Row(
@@ -47,6 +72,11 @@ class _AudioPlayerState extends State<AudioPlayerView> {
                       highlightColor: colorTheme.accentColor.withOpacity(0.2),
                       onTap: () {
                         audioController.skipPrevious();
+                        if (!audioController.isPlaying) {
+                          audioController.play();
+                        }
+                        _helpText = 'PREVIOUS';
+                        _controlsFeedbackVisible = true;
                       },
                       child: Container(
                         color: Colors.transparent, //Colors.blue.withOpacity(0.4),
@@ -58,14 +88,13 @@ class _AudioPlayerState extends State<AudioPlayerView> {
                     child: GestureDetector(
                       onTap: () {
                         audioController.togglePlay();
+                        _helpText = audioController.isPlaying ? 'PAUSED' : 'PLAYING';
+                        _controlsFeedbackVisible = true;
+                        // setState(() {});
                       },
                       child: Container(
                         color: Colors.transparent, //Colors.yellow.withOpacity(0.4),
-                        child: Center(
-                          child: PlayerControls(
-                            controller: audioController,
-                          ),
-                        ),
+                        child: Center(child: _playerControls(colorTheme)),
                       ),
                     ),
                   ),
@@ -75,7 +104,12 @@ class _AudioPlayerState extends State<AudioPlayerView> {
                       splashColor: colorTheme.accentColor.withOpacity(0.2),
                       highlightColor: colorTheme.accentColor.withOpacity(0.2),
                       onTap: () {
+                        _helpText = 'NEXT';
+                        _controlsFeedbackVisible = true;
                         audioController.skipNext();
+                        if (!audioController.isPlaying) {
+                          audioController.play();
+                        }
                       },
                       child: Container(
                         color: Colors.transparent, //Colors.blue.withOpacity(0.4),
@@ -93,37 +127,64 @@ class _AudioPlayerState extends State<AudioPlayerView> {
   }
 }
 
-class TrackInfo extends StatelessWidget {
-  final AudioSet audioSet;
-  const TrackInfo({Key key, @required this.audioSet}) : super(key: key);
+class TrackInfo extends StatefulWidget {
+  const TrackInfo({Key key}) : super(key: key);
+
+  @override
+  _TrackInfoState createState() => _TrackInfoState();
+}
+
+class _TrackInfoState extends State<TrackInfo> {
+  AudioController audioController;
+
+  @override
+  void initState() {
+    audioController = context.read<AudioController>();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorTheme = AppColors.of(context).activeColorTheme();
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              H1Text(
-                audioSet.name,
-                fontSize: 20,
-                color: colorTheme.accentColor,
+
+    return StreamBuilder<ScreenState>(
+      stream: audioController.screenStateStream,
+      builder: (BuildContext context, AsyncSnapshot<ScreenState> snapshot) {
+        final screenState = snapshot.data;
+
+        final mediaItem = screenState?.mediaItem;
+        final state = screenState?.playbackState;
+        final processingState = state?.processingState ?? AudioProcessingState.none;
+        print(processingState);
+        print(mediaItem);
+        final audioSet = audioController.setForMediaItem(mediaItem);
+        if (audioSet == null) return SizedBox();
+        return Row(
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  H1Text(
+                    audioSet.name,
+                    fontSize: 20,
+                    color: colorTheme.accentColor,
+                  ),
+                  BodyText1(
+                    audioSet.artist.name,
+                    color: colorTheme.accentColor,
+                  ),
+                ],
               ),
-              BodyText1(
-                audioSet.artist.name,
-                color: colorTheme.accentColor,
-              ),
-            ],
-          ),
-        ),
-        ToggleFavoriteButton(
-          audioSet: audioSet,
-          color: colorTheme.accentColor,
-        )
-      ],
+            ),
+            ToggleFavoriteButton(
+              audioSet: audioSet,
+              color: colorTheme.accentColor,
+            )
+          ],
+        );
+      },
     );
   }
 }
@@ -176,7 +237,7 @@ class _ToggleFavoriteButtonState extends State<ToggleFavoriteButton> {
             _onPressed();
           },
           child: Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
             color: Colors.transparent,
             child: ImageIcon(
               AssetImage(icon),
@@ -186,35 +247,6 @@ class _ToggleFavoriteButtonState extends State<ToggleFavoriteButton> {
           ),
         );
       },
-    );
-  }
-}
-
-class PlayerControls extends StatelessWidget {
-  final AudioController controller;
-  const PlayerControls({Key key, this.controller}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final colorTheme = AppColors.of(context).activeColorTheme();
-    final icon = controller.isPlaying ? 'assets/img/ic_pause.png' : 'assets/img/ic_play.png';
-    return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            icon,
-            color: colorTheme.accentColor,
-          ),
-          const SizedBox(height: 8),
-          BodyText2(
-            controller.isPlaying ? '' : 'MUSIC PAUSED',
-            fontSize: 16,
-            color: colorTheme.accentColor,
-            fontWeight: FontWeight.bold,
-          )
-        ],
-      ),
     );
   }
 }

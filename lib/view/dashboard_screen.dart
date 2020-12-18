@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/audio/audio_controller.dart';
 import 'package:pebbl/logic/colors.dart';
@@ -6,6 +8,7 @@ import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/presenter/sets_presenter.dart';
 import 'package:pebbl/presenter/timer_presenter.dart';
+import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/components/animation_view.dart';
 import 'package:pebbl/view/components/bottom_bar.dart';
 import 'package:pebbl/view/components/sets/sets_list.dart';
@@ -15,6 +18,7 @@ import 'package:pebbl/view/home/timer/timer_view.dart';
 import 'package:pebbl/view/home/tutorial_view.dart';
 import 'package:provider/provider.dart';
 
+@deprecated
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key key}) : super(key: key);
 
@@ -27,6 +31,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   SetsPresenter _setsPresenter;
   bool _showTour = false;
   AudioController _audioController;
+  StreamSubscription<bool> _showTourSub;
+
   @override
   void initState() {
     super.initState();
@@ -39,14 +45,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _loadSettings();
   }
 
-  void _loadSettings() async {
-    _showTour = await LocalStorage.getbool(LocalStorage.TOUR_KEY) ?? true;
+  void _loadSettings() {
+    _showTourSub = context.read<UserPresenter>().tutorialSettingSub.listen((value) {
+      setState(() {
+        _showTour = value;
+      });
+    });
   }
 
   @override
   void dispose() {
+    _showTourSub.cancel();
     context.read<AudioController>().dispose();
-
     super.dispose();
   }
 

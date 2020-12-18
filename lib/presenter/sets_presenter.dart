@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/model/audio_set.dart';
 import 'package:pebbl/model/category.dart';
 import 'package:pebbl/model/services/audio_service.dart';

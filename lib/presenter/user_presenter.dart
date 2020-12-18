@@ -6,7 +6,6 @@ import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/navigation_helper.dart';
 import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/model/audio_set.dart';
-import 'package:pebbl/model/services/audio_service.dart';
 import 'package:pebbl/model/services/firebase_service.dart';
 import 'package:pebbl/model/services/user_service.dart';
 import 'package:pebbl/model/user.dart';
@@ -28,6 +27,9 @@ class UserPresenter {
   final BehaviorSubject<List<AudioSet>> favoritesSubject = BehaviorSubject.seeded(null);
   ValueStream<List<AudioSet>> get favoritesStream => favoritesSubject.stream;
 
+  final BehaviorSubject<bool> tutorialSettingSub = BehaviorSubject.seeded(false);
+  ValueStream<bool> get showTutorialStream => tutorialSettingSub.stream;
+
   StreamSubscription<User> _loginSub;
 
   void initialize() async {
@@ -40,13 +42,18 @@ class UserPresenter {
           await loggedInUser.getIdToken(true);
           await loggedInUser.reload();
         }
-
+        await loadSettings();
         user = await fetchUser(loggedInUser.uid);
         setupFavoritesStream();
       }
 
       isInitialized.add(true);
     });
+  }
+
+  Future loadSettings() async {
+    final showTour = await LocalStorage.getbool(LocalStorage.TOUR_KEY) ?? true;
+    tutorialSettingSub.add(showTour);
   }
 
   void setupFavoritesStream() {

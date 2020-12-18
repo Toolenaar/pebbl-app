@@ -41,8 +41,9 @@ class ScreenState {
   final List<MediaItem> queue;
   final MediaItem mediaItem;
   final PlaybackState playbackState;
+  final List<AudioSet> playlist;
 
-  ScreenState(this.queue, this.mediaItem, this.playbackState);
+  ScreenState(this.queue, this.mediaItem, this.playbackState, this.playlist);
 }
 
 /// Encapsulate all the different data we're interested in into a single
@@ -60,12 +61,14 @@ class AudioController {
 
   StreamSubscription<ScreenState> _screenStateSub;
   Stream<ScreenState> get screenStateStream =>
-      Rx.combineLatest3<List<MediaItem>, MediaItem, PlaybackState, ScreenState>(
+      Rx.combineLatest4<List<MediaItem>, MediaItem, PlaybackState, List<AudioSet>, ScreenState>(
           AudioService.queueStream,
           AudioService.currentMediaItemStream,
           AudioService.playbackStateStream,
-          (queue, mediaItem, playbackState) => ScreenState(queue, mediaItem, playbackState));
+          _currentPlaylistSubject.stream,
+          (queue, mediaItem, playbackState, playlist) => ScreenState(queue, mediaItem, playbackState, playlist));
 
+  final BehaviorSubject<List<AudioSet>> _currentPlaylistSubject = BehaviorSubject.seeded(null);
   List<AudioSet> _currentPlaylist = [];
 
   AudioSet setForMediaItem(MediaItem item) {
@@ -98,6 +101,7 @@ class AudioController {
 
   void startPlaylistAtIndex(List<AudioSet> sets, int index) {
     _currentPlaylist = sets;
+    _currentPlaylistSubject.add(sets);
     _startPlaylist(index: index);
   }
 
@@ -105,6 +109,7 @@ class AudioController {
     final copy = sets.map((s) => s.copyWith()).toList();
     copy.shuffle();
     _currentPlaylist = copy;
+    _currentPlaylistSubject.add(_currentPlaylist);
     _startPlaylist();
   }
 

@@ -9,6 +9,7 @@ import 'package:pebbl/view/components/modals/dialog_helper.dart';
 import 'package:pebbl/view/components/progress_view.dart';
 import 'package:pebbl/view/components/text/pebbl_form_field.dart';
 import 'package:pebbl/view/dashboard_screen.dart';
+import 'package:pebbl/view/home_screen.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -57,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     var result = await presenter.login(email: _email, password: _password);
     if (result != null) {
-      NavigationHelper.navigateAndRemove(context, DashboardScreen(), 'DashboardScreen');
+      NavigationHelper.navigateAndRemove(context, HomePage(), 'HomePage');
     } else {
       DialogHelper.showErrorDialog(
           context: context,

@@ -97,6 +97,7 @@ class TimerSetupView extends StatelessWidget {
   final Function(String) modeChanged;
 
   static List<Minute> times = [
+    Minute(1),
     Minute(10),
     Minute(20),
     Minute(30),
@@ -106,7 +107,7 @@ class TimerSetupView extends StatelessWidget {
     Minute(120),
     Minute(180)
   ];
-  static List<Minute> breakTimes = [Minute(5), Minute(10), Minute(15), Minute(20), Minute(30)];
+  static List<Minute> breakTimes = [Minute(1), Minute(5), Minute(10), Minute(15), Minute(20), Minute(30)];
 
   const TimerSetupView(
       {Key key,

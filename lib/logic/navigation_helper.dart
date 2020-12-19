@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 
 class NavigationHelper {
   // static Future navigateAsOverlay(BuildContext context, Widget content) {
@@ -36,6 +36,20 @@ class NavigationHelper {
     return result;
   }
 
+  static launchURL(String url) async {
+    var finalUrl = url;
+    if (url.startsWith('www')) {
+      finalUrl = url.replaceFirst('www', 'https://www');
+    } else if (!url.startsWith('https://') && !url.startsWith('http://')) {
+      finalUrl = 'https://' + url;
+    }
+    if (await canLaunch(finalUrl)) {
+      await launch(finalUrl);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   // static launchURL(String url) async {
   //   if (await canLaunch(url)) {
   //     await launch(url);
@@ -43,8 +57,6 @@ class NavigationHelper {
   //     throw 'Could not launch $url';
   //   }
   // }
-
- 
 
   // static void launchYoutube(String url) async {
   //   if (Platform.isIOS) {

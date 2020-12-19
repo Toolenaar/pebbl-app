@@ -72,6 +72,7 @@ class AudioController {
   List<AudioSet> _currentPlaylist = [];
 
   AudioSet setForMediaItem(MediaItem item) {
+    if (item == null || item.id == null) return null;
     final audioSet = _currentPlaylist.where((element) => item.id == element.playbackUrl);
     if (audioSet.isEmpty) return null;
     return audioSet.first;
@@ -122,7 +123,7 @@ class AudioController {
               id: url,
               title: item.name,
               artist: item.artist.name,
-              album: item.category?.name ?? 'Pebbl',
+              album: item.category?.name ?? 'Pomfi',
               duration: Duration(seconds: item.duration))
           .toJson());
     }
@@ -137,7 +138,7 @@ class AudioController {
 
     final result = await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
-      androidNotificationChannelName: 'Pebbl',
+      androidNotificationChannelName: 'Pomfi',
       // Enable this if you want the Android service to exit the foreground state on pause.
       //androidStopForegroundOnPause: true,
       androidNotificationColor: 0xFF2196f3,
@@ -146,11 +147,12 @@ class AudioController {
 
       params: {'queue': trackQueue},
     );
+    await Future.delayed(Duration(milliseconds: 500));
     if (index != null) {
       final mediaId = trackQueue[index]['id'];
       AudioService.skipToQueueItem(mediaId);
     }
-    // AudioService.play();
+    AudioService.play();
     //AudioService.addQueueItems(trackQueue);
   }
 

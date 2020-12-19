@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
+import 'package:pebbl/logic/date_helper.dart';
 import 'package:pebbl/logic/local_notification_helper.dart';
 import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/logic/texts.dart';
@@ -32,10 +33,14 @@ class _ActiveTimerViewState extends State<ActiveTimerView> {
     _presenter = context.read<TimerPresenter>();
     _active = _timerData.endTime != null;
     _presenter.updateActiveTimer(_timerData = _timerData.copyWith());
+    if (_presenter.activeTimer.endTime == null) {
+      _start();
+    }
     super.initState();
   }
 
-  void _start() {
+  Future _start() async {
+    await Future.delayed(Duration(milliseconds: 1000));
     context.read<LocalNotificationHelper>().sendNotification(
         'Your work is done!', 'Another job well done! Time to take a break.',
         scheduleFromNow: Duration(minutes: _presenter.activeTimer.workTime));
@@ -91,7 +96,8 @@ class _ActiveTimerViewState extends State<ActiveTimerView> {
       stopText = 'Start new timer';
     }
     if (_timerData.needsAbreak) {
-      stopText = 'Start break timer';
+      final secs = _timerData.breakTime * 60;
+      stopText = 'Start break (${DateHelper.secondsToHoursMinutesSeconds(secs)})';
     }
 
     return stopText;
@@ -161,10 +167,10 @@ class _ActiveTimerViewState extends State<ActiveTimerView> {
                 ),
               if (!_timerData.needsAbreak)
                 Expanded(
-                  child: GestureDetector(
-                    onTap: widget.onCloseTap,
-                    child: Container(
-                      color: Colors.transparent,
+                  child: Center(
+                    child: CountdownTimerView(
+                      time: snapshot.data,
+                      color: colorTheme.accentColor,
                     ),
                   ),
                 ),
@@ -200,11 +206,19 @@ class _ActiveTimerViewState extends State<ActiveTimerView> {
               //       .toList(),
               // ),
               const SizedBox(height: 32),
-              ThemedPebbleButton(
-                  title: _active ? _stopText() : 'Start', categoryTheme: colorTheme, onTap: _active ? _stop : _start),
+              if (_timerData.needsAbreak) ...[
+                ThemedPebbleButton(
+                    title: _active ? _stopText() : 'Start', categoryTheme: colorTheme, onTap: _active ? _stop : _start),
+                const SizedBox(height: 8),
+                ThemedPebbleButton(
+                    title: 'Continue work (${DateHelper.secondsToHoursMinutesSeconds(_timerData.workTime * 60)})',
+                    categoryTheme: colorTheme,
+                    onTap: _restartTimer),
+              ],
+
               FlatButton(
                 child: BodyText2(
-                  'Reset',
+                  'Reset timer',
                   color: colorTheme.accentColor40,
                 ),
                 onPressed: _reset,
@@ -214,5 +228,9 @@ class _ActiveTimerViewState extends State<ActiveTimerView> {
         );
       },
     );
+  }
+
+  void _restartTimer() {
+    _start();
   }
 }

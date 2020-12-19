@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
 import 'package:pebbl/logic/navigation_helper.dart';
+import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/logic/validation.dart';
 import 'package:pebbl/logic/view_helper.dart';
 import 'package:pebbl/presenter/user_presenter.dart';
+import 'package:pebbl/view/components/animation_view.dart';
 import 'package:pebbl/view/components/buttons/pebble_button.dart';
 import 'package:pebbl/view/components/modals/dialog_helper.dart';
 import 'package:pebbl/view/components/progress_view.dart';
@@ -75,6 +77,8 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: AppColors.of(context).activeColorTheme().backgroundColor,
       appBar: AppBar(
+        iconTheme: IconThemeData(color: AppColors.of(context).activeColorTheme().accentColor),
+        title: H1Text('Login', fontSize: 20, color: AppColors.of(context).activeColorTheme().accentColor),
         brightness: Brightness.dark,
         elevation: 0,
         backgroundColor: AppColors.of(context).activeColorTheme().backgroundColor,
@@ -88,32 +92,39 @@ class _LoginScreenState extends State<LoginScreen> {
                 });
                 ViewHelper.hideKeyboard(context);
               },
-              child: Container(
-                color: Colors.transparent,
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-                child: SafeArea(
-                  child: Column(
-                    children: <Widget>[
-                      AnimatedLoginGraphic(formActive: _formActive),
-                      Expanded(
-                        child: Container(
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: LoginForm(
-                              emailInitialValue: _email,
-                              passwordInitialValue: _password,
-                              login: _login,
-                              emailFocus: _emailFocus,
-                              passwordFocus: _passwordFocus,
-                              onPasswordChanged: (value) => _password = value,
-                              onEmailChanged: (value) => _email = value,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: AnimationView(
+                        color: AppColors.of(context).activeColorTheme().accentColor,
+                        animationFile: 'assets/animations/rain.json'),
+                  ),
+                  Container(
+                    color: Colors.transparent,
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                    child: SafeArea(
+                      child: Column(
+                        children: <Widget>[
+                          Spacer(),
+                          Container(
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: LoginForm(
+                                emailInitialValue: _email,
+                                passwordInitialValue: _password,
+                                login: _login,
+                                emailFocus: _emailFocus,
+                                passwordFocus: _passwordFocus,
+                                onPasswordChanged: (value) => _password = value,
+                                onEmailChanged: (value) => _email = value,
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
     );
@@ -186,6 +197,7 @@ class _LoginFormState extends State<LoginForm> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           PebblFormField(
+            autoFocus: true,
             initialValue: widget.emailInitialValue,
             onChanged: widget.onEmailChanged,
             focusNode: widget.emailFocus,
@@ -214,10 +226,12 @@ class _LoginFormState extends State<LoginForm> {
             },
           ),
           const SizedBox(height: 24),
-          PebbleButton(
+          ThemedPebbleButton(
             title: 'Login',
+            categoryTheme: AppColors.of(context).activeColorTheme(),
             onTap: () => widget.login(_formKey),
           ),
+          const SizedBox(height: 16),
         ],
       ),
     );

@@ -12,7 +12,7 @@ class AnimationView extends StatelessWidget {
     return Container(
       //color: Colors.blue.withOpacity(0.3),
       child: Lottie.asset(
-        'assets/animations/rain.json', //_getAnimationForTheme(context),
+        animationFile,
         fit: BoxFit.fill,
         delegates: LottieDelegates(
           values: [

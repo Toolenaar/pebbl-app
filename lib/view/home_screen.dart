@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> {
           : Column(
               children: [
                 Expanded(
-                  child: activeView,
+                  child: !_showTour ? activeView : SizedBox(),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
@@ -115,11 +115,13 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.transparent,
       titleSpacing: 0,
       elevation: 0,
-      title: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-        child: TrackInfo(),
-      ),
-      actions: [_MenuActions(onActionTap: _onMenuActionClick, showPlayist: _activeIndex == 0)],
+      title: _showTour
+          ? SizedBox()
+          : Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+              child: TrackInfo(),
+            ),
+      actions: _showTour ? [] : [_MenuActions(onActionTap: _onMenuActionClick, showPlayist: _activeIndex == 0)],
     );
   }
 
@@ -136,7 +138,7 @@ class _HomePageState extends State<HomePage> {
           child: AnimationView(
             color: colorTheme.accentColor,
             animationFile: snapshot.data?.animationFileName == null
-                ? 'assets/animations/study_data.json'
+                ? 'assets/animations/rain.json'
                 : snapshot.data?.animationFileName,
           ),
         );
@@ -161,8 +163,9 @@ class _HomePageState extends State<HomePage> {
               if (_showTour)
                 Positioned(
                   bottom: 72,
-                  right: 24,
-                  left: 24,
+                  right: 0,
+                  left: 0,
+                  top: 0,
                   child: SafeArea(
                     child: TutorialView(
                       onTourCompleted: () {

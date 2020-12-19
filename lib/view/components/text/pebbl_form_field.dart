@@ -6,6 +6,7 @@ class PebblFormField extends StatelessWidget {
   final TextInputType keyboardType;
   final FocusNode focusNode;
   final bool obscureText;
+  final bool autoFocus;
   final String initialValue;
   final Function(String) onChanged;
   final Function(String) validator;
@@ -17,6 +18,7 @@ class PebblFormField extends StatelessWidget {
       this.validator,
       this.focusNode,
       this.onChanged,
+      this.autoFocus = false,
       this.obscureText = false})
       : super(key: key);
 
@@ -37,6 +39,7 @@ class PebblFormField extends StatelessWidget {
     );
 
     return TextFormField(
+        autofocus: autoFocus,
         focusNode: focusNode,
         initialValue: initialValue,
         obscureText: obscureText,

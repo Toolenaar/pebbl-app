@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pebbl/logic/colors.dart';
+import 'package:pebbl/logic/navigation_helper.dart';
 import 'package:pebbl/logic/storage.dart';
 import 'package:pebbl/logic/texts.dart';
 import 'package:pebbl/model/category.dart';
+import 'package:pebbl/presenter/timer_presenter.dart';
 import 'package:pebbl/presenter/user_presenter.dart';
 import 'package:pebbl/view/components/text/version_nr_text.dart';
 import 'package:provider/provider.dart';
@@ -44,6 +46,8 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           GestureDetector(
             onTap: () async {
+              context.read<TimerPresenter>().reset();
+              await LocalStorage.saveTimerData(null);
               await context.read<UserPresenter>().signOut(context);
             },
             child: Container(
@@ -162,8 +166,11 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  Container(
-                    child: BodyText1('TERMS OF SERVICE', color: colorTheme.accentColor),
+                  GestureDetector(
+                    onTap: () => NavigationHelper.launchURL('http://www.boeie.dev/pomfi/privacy_policy'),
+                    child: Container(
+                      child: BodyText1('Privacy Policy', color: colorTheme.accentColor),
+                    ),
                   ),
                   Spacer(),
                   VersionNrText(color: colorTheme.accentColor)
